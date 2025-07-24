@@ -2,6 +2,7 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanozgokce.androidbootcampfinalproject.data.UserDataStore
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase.SignUpUseCase
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val signUpUseCase: SignUpUseCase
+    private val signUpUseCase: SignUpUseCase,
+    private val userDataStore: UserDataStore
 ) : ViewModel(), MVI<UiState, UiAction, UiEffect> by mvi(UiState()) {
 
     override fun onAction(uiAction: UiAction) {
@@ -52,27 +54,35 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun register() {
+        val currentState = uiState.value
+
         viewModelScope.launch {
             updateUiState { copy(isLoading = true) }
 
-            val currentUiState = uiState.value
+            try {
+                val result = signUpUseCase(
+                    email = currentState.email,
+                    password = currentState.password,
+                    displayName = currentState.displayName
+                )
 
-            signUpUseCase(
-                email = currentUiState.email,
-                password = currentUiState.password,
-                displayName = currentUiState.displayName
-            ).fold(
-                onSuccess = {
-                    updateUiState { copy(isLoading = false) }
-                    emitUiEffect(UiEffect.ShowSuccess("Hesap başarıyla oluşturuldu!"))
-                    delay(1000)
-                    emitUiEffect(UiEffect.NavigateToLogin)
-                },
-                onFailure = { exception ->
-                    updateUiState { copy(isLoading = false) }
-                    emitUiEffect(UiEffect.ShowError(exception.message ?: "Kayıt sırasında hata oluştu"))
-                }
-            )
+                result.fold(
+                    onSuccess = { user ->
+                        userDataStore.saveUserData(user, rememberMe = false)
+                        updateUiState { copy(isLoading = false) }
+                        emitUiEffect(UiEffect.ShowSuccess("Kayıt başarılı! Hoş geldiniz, ${user.displayName}"))
+                        delay(1000)
+                        emitUiEffect(UiEffect.NavigateToHome)
+                    },
+                    onFailure = { exception ->
+                        updateUiState { copy(isLoading = false) }
+                        emitUiEffect(UiEffect.ShowError("Kayıt işlemi başarısız: ${exception.message}"))
+                    }
+                )
+            } catch (e: Exception) {
+                updateUiState { copy(isLoading = false) }
+                emitUiEffect(UiEffect.ShowError("Beklenmeyen bir hata oluştu: ${e.message}"))
+            }
         }
     }
 

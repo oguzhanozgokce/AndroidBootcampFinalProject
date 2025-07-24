@@ -2,9 +2,9 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanozgokce.androidbootcampfinalproject.data.UserDataStore
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
-import com.oguzhanozgokce.androidbootcampfinalproject.domain.repository.AuthRepository
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashContract.UiState
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val userDataStore: UserDataStore,
 ) : ViewModel(), MVI<UiState, UiAction, UiEffect> by mvi(UiState()) {
 
     init {
@@ -39,25 +39,33 @@ class SplashViewModel @Inject constructor(
 
             delay(1500)
 
-            authRepository.getCurrentUser()
-                .fold(
-                    onSuccess = { user ->
-                        if (user != null) {
-                            emitUiEffect(UiEffect.NavigateToHome)
-                        } else {
-                            emitUiEffect(UiEffect.NavigateToLogin)
+            try {
+                userDataStore.getUserSession().collect { session ->
+                    if (session.isSessionValid && session.user != null) {
+                        emitUiEffect(UiEffect.NavigateToHome)
+                    } else {
+                        if (session.user != null) {
+                            userDataStore.clearAuthState()
                         }
-                    },
-                    onFailure = {
                         emitUiEffect(UiEffect.NavigateToLogin)
                     }
-                )
 
-            updateUiState {
-                copy(
-                    isLoading = false,
-                    isCheckingAuth = false
-                )
+                    updateUiState {
+                        copy(
+                            isLoading = false,
+                            isCheckingAuth = false
+                        )
+                    }
+                    return@collect
+                }
+            } catch (e: Exception) {
+                emitUiEffect(UiEffect.NavigateToLogin)
+                updateUiState {
+                    copy(
+                        isLoading = false,
+                        isCheckingAuth = false
+                    )
+                }
             }
         }
     }
