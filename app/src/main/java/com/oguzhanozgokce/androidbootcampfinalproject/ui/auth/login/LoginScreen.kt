@@ -135,12 +135,10 @@ fun LoginContent(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // App Logo and Title Section
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // App Icon
                 Image(
                     painter = painterResource(id = R.drawable.ic_puzzle),
                     contentDescription = "Memory Game Logo",
@@ -176,9 +174,9 @@ fun LoginContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(32.dp),
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Welcome Text
                     Column(
@@ -206,50 +204,10 @@ fun LoginContent(
                         onAction = onAction
                     )
 
-                    // Remember Me and Forgot Password
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = false,
-                                onCheckedChange = { },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = MaterialTheme.colorScheme.primary,
-                                    uncheckedColor = MaterialTheme.colorScheme.outline
-                                )
-                            )
-                            Text(
-                                text = "Remember me",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            )
-                        }
-
-                        Text(
-                            text = "Forgot password?",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Medium
-                            ),
-                            modifier = Modifier.clickable {
-                                onAction(UiAction.OnForgotPasswordClicked)
-                            }
-                        )
-                    }
-
-                    // Login Button
                     ABButton(
                         text = "Sign In",
                         onClick = { onAction(UiAction.OnLoginClicked) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         variant = ABButtonVariant.PRIMARY,
                         size = ABButtonSize.LARGE,
                         enabled = uiState.isFormValid && !uiState.isLoading,
@@ -267,17 +225,12 @@ fun LoginContent(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
                     ) {
-                        SocialButton(
-                            onClick = { /* Google Sign In */ },
-                            backgroundColor = Color.White,
-                            iconRes = R.drawable.ic_google,
-                            text = "Google"
+                        GoogleSignInButton(
+                            onClick = { /* Google Sign In */ }
                         )
                     }
 
-                    // Sign Up Link
                     Row(
-                        modifier = Modifier.padding(top = 16.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -359,15 +312,51 @@ private fun LoginForm(
             ),
             modifier = Modifier.fillMaxWidth()
         )
+
+        // Remember Me and Forgot Password
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = false,
+                    onCheckedChange = { },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = MaterialTheme.colorScheme.outline
+                    )
+                )
+                Text(
+                    text = "Remember me",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                )
+            }
+
+            Text(
+                text = "Forgot password?",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.clickable {
+                    onAction(UiAction.OnForgotPasswordClicked)
+                }
+            )
+        }
     }
 }
 
 @Composable
-private fun SocialButton(
-    onClick: () -> Unit,
-    backgroundColor: Color,
-    iconRes: Int,
-    text: String
+private fun GoogleSignInButton(
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -375,7 +364,7 @@ private fun SocialButton(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor
+            containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -387,7 +376,7 @@ private fun SocialButton(
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = painterResource(id = iconRes),
+                painter = painterResource(id = R.drawable.ic_google),
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -395,13 +384,9 @@ private fun SocialButton(
             Spacer(modifier = Modifier.size(12.dp))
 
             Text(
-                text = "Continue with $text",
+                text = "Continue with Google",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = if (backgroundColor == Color.White) {
-                        Color.Black
-                    } else {
-                        Color.White
-                    },
+                    color = Color.Black,
                     fontWeight = FontWeight.Medium
                 )
             )

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -48,6 +49,7 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABBaseScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButton
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonSize
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonVariant
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABDividerWithText
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABSnackbarType
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABTextField
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.showABSnackbar
@@ -114,92 +116,143 @@ fun RegisterContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            )
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Memory Game",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
+            // App Logo and Title Section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // App Icon
+                Image(
+                    painter = painterResource(id = R.drawable.ic_puzzle),
+                    contentDescription = "Memory Game Logo",
+                    modifier = Modifier.size(80.dp),
+                )
 
+                Text(
+                    text = "Fun Time",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+
+                Text(
+                    text = "Challenge your mind with our puzzle games",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+
+            // Register Card
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    // Welcome Text
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
                             text = "Create Account",
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                        Text(
-                            text = "Join Memory Game now!",
-                            style = MaterialTheme.typography.headlineSmall.copy(
+                            style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         )
+                        Text(
+                            text = "Join us to start your journey",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
 
+                    // Register Form
                     RegisterForm(
                         uiState = uiState,
                         onAction = onAction
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Register Button
                     ABButton(
                         text = "Create Account",
                         onClick = { onAction(UiAction.OnRegisterClicked) },
                         modifier = Modifier.fillMaxWidth(),
                         variant = ABButtonVariant.PRIMARY,
                         size = ABButtonSize.LARGE,
+                        enabled = !uiState.isLoading,
                         loading = uiState.isLoading,
                         fullWidth = true
                     )
 
-                    Text(
-                        text = "Or Sign up with",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
+                    ABDividerWithText(
+                        text = "Or continue with",
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
-                    SocialLoginSection()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                    ) {
+                        GoogleSignInButton(
+                            onClick = { /* Google Sign In */ }
+                        )
+                    }
+
+                    // Login Link
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Already have an account? ",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                        Text(
+                            text = "Sign In",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.clickable {
+                                onAction(UiAction.OnLoginClicked)
+                            }
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            LoginSection(onAction = onAction)
         }
     }
 }
@@ -210,7 +263,7 @@ private fun RegisterForm(
     onAction: (UiAction) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(18.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = "Display Name",
@@ -223,7 +276,7 @@ private fun RegisterForm(
         ABTextField(
             value = uiState.displayName,
             onValueChange = { onAction(UiAction.OnDisplayNameChanged(it)) },
-            placeholder = "John Doe",
+            placeholder = "Display Name",
             leadingIcon = Icons.Default.Person,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
@@ -237,12 +290,13 @@ private fun RegisterForm(
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
             ),
+            modifier = Modifier.padding(top = 8.dp)
         )
 
         ABTextField(
             value = uiState.email,
             onValueChange = { onAction(UiAction.OnEmailChanged(it)) },
-            placeholder = "johndoe@gmail.com",
+            placeholder = "Email",
             leadingIcon = Icons.Default.Email,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email
@@ -256,12 +310,13 @@ private fun RegisterForm(
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
             ),
+            modifier = Modifier.padding(top = 8.dp)
         )
 
         ABTextField(
             value = uiState.password,
             onValueChange = { onAction(UiAction.OnPasswordChanged(it)) },
-            placeholder = "••••••••",
+            placeholder = "Password",
             leadingIcon = Icons.Default.Lock,
             visualTransformation = if (uiState.isPasswordVisible) {
                 VisualTransformation.None
@@ -277,80 +332,42 @@ private fun RegisterForm(
 }
 
 @Composable
-private fun SocialLoginSection() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
-    ) {
-        SocialButton(
-            onClick = { },
-            backgroundColor = Color(0xFF1877F2),
-            iconRes = R.drawable.ic_launcher_foreground
-        )
-
-        SocialButton(
-            onClick = { },
-            backgroundColor = Color.White,
-            iconRes = R.drawable.ic_launcher_foreground
-        )
-
-        SocialButton(
-            onClick = { },
-            backgroundColor = Color.Black,
-            iconRes = R.drawable.ic_launcher_foreground
-        )
-    }
-}
-
-@Composable
-private fun SocialButton(
-    onClick: () -> Unit,
-    backgroundColor: Color,
-    iconRes: Int
+private fun GoogleSignInButton(
+    onClick: () -> Unit
 ) {
-    Box(
+    Card(
         modifier = Modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
+            .fillMaxWidth()
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            colorFilter = if (backgroundColor == Color.White) {
-                null
-            } else {
-                ColorFilter.tint(Color.White)
-            }
-        )
-    }
-}
-
-@Composable
-private fun LoginSection(
-    onAction: (UiAction) -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Already have an account? ",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_google),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
             )
-        )
 
-        ABButton(
-            text = "Login",
-            onClick = { onAction(UiAction.OnLoginClicked) },
-            variant = ABButtonVariant.TEXT,
-            size = ABButtonSize.MEDIUM
-        )
+            Spacer(modifier = Modifier.size(12.dp))
+
+            Text(
+                text = "Continue with Google",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
     }
 }
 
