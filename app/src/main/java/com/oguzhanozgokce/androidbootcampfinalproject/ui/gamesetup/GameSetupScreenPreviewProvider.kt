@@ -7,15 +7,19 @@ class GameSetupScreenPreviewProvider : PreviewParameterProvider<GameSetupContrac
         get() = sequenceOf(
             GameSetupContract.UiState(
                 isLoading = true,
-                list = emptyList(),
+                selectedDifficulty = DifficultyLevel.EASY
             ),
             GameSetupContract.UiState(
                 isLoading = false,
-                list = emptyList(),
+                selectedDifficulty = DifficultyLevel.EASY
             ),
             GameSetupContract.UiState(
                 isLoading = false,
-                list = listOf("Item 1", "Item 2", "Item 3")
+                selectedDifficulty = DifficultyLevel.MEDIUM
             ),
+            GameSetupContract.UiState(
+                isLoading = false,
+                selectedDifficulty = DifficultyLevel.HARD
+            )
         )
 }
