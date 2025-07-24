@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetGameSettingsUseCase @Inject constructor(
     private val repository: GameSettingsRepository
 ) {
-    suspend operator fun invoke(): Resource<GameSettings> {
+    suspend operator fun invoke(): Result<GameSettings> {
         return repository.getSettings()
     }
 }

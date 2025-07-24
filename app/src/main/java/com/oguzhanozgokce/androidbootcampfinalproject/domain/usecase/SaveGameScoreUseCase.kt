@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SaveGameScoreUseCase @Inject constructor(
     private val repository: GameScoreRepository
 ) {
-    suspend operator fun invoke(gameScore: GameScore): Resource<String> {
+    suspend operator fun invoke(gameScore: GameScore): Result<String> {
         return repository.saveScore(gameScore)
     }
 }

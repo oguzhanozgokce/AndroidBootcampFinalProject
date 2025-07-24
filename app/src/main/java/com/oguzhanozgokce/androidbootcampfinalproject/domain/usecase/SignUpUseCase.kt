@@ -1,7 +1,7 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase
 
 import android.util.Patterns
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
+import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.BadRequestException
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.User
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.repository.AuthRepository
 import javax.inject.Inject
@@ -13,25 +13,25 @@ class SignUpUseCase @Inject constructor(
         email: String,
         password: String,
         displayName: String
-    ): Resource<User> {
+    ): Result<User> {
         if (email.isBlank()) {
-            return Resource.Error("E-posta adresi boş olamaz", errorCode = "missing-email")
+            return Result.failure(BadRequestException("E-posta adresi boş olamaz"))
         }
 
         if (password.isBlank()) {
-            return Resource.Error("Şifre boş olamaz", errorCode = "missing-password")
+            return Result.failure(BadRequestException("Şifre boş olamaz"))
         }
 
         if (displayName.isBlank()) {
-            return Resource.Error("İsim boş olamaz", errorCode = "missing-display-name")
+            return Result.failure(BadRequestException("İsim boş olamaz"))
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            return Resource.Error("Geçersiz e-posta adresi", errorCode = "invalid-email")
+            return Result.failure(BadRequestException("Geçersiz e-posta adresi"))
         }
 
         if (password.length < 6) {
-            return Resource.Error("Şifre en az 6 karakter olmalı", errorCode = "weak-password")
+            return Result.failure(BadRequestException("Şifre en az 6 karakter olmalı"))
         }
 
         return authRepository.signUpWithEmailAndPassword(email, password, displayName)

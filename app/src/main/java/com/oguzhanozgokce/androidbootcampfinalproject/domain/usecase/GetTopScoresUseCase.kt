@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetTopScoresUseCase @Inject constructor(
     private val repository: GameScoreRepository
 ) {
-    suspend operator fun invoke(limit: Int = 10): Resource<List<GameScore>> {
+    suspend operator fun invoke(limit: Int = 10): Result<List<GameScore>> {
         return repository.getTopScores(limit)
     }
 }
