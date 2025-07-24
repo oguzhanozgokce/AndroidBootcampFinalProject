@@ -28,7 +28,6 @@ abstract class RepositoryModule {
         gameSettingsRepositoryImpl: GameSettingsRepositoryImpl
     ): GameSettingsRepository
 
-
     @Binds
     @Singleton
     abstract fun bindAuthRepository(
