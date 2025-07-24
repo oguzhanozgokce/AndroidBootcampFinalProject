@@ -2,10 +2,11 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.ErrorHandler
+import com.oguzhanozgokce.androidbootcampfinalproject.data.UserDataStore
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase.SignInUseCase
-import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.ErrorHandler
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiState
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val signInUseCase: SignInUseCase
+    private val signInUseCase: SignInUseCase,
+    private val userDataStore: UserDataStore
 ) : ViewModel(), MVI<UiState, UiAction, UiEffect> by mvi(UiState()) {
 
     override fun onAction(uiAction: UiAction) {
@@ -23,6 +25,7 @@ class LoginViewModel @Inject constructor(
             is UiAction.OnEmailChanged -> handleEmailChanged(uiAction.email)
             is UiAction.OnPasswordChanged -> handlePasswordChanged(uiAction.password)
             is UiAction.OnPasswordVisibilityToggled -> togglePasswordVisibility()
+            is UiAction.OnRememberMeChanged -> handleRememberMeChanged(uiAction.rememberMe)
             is UiAction.OnLoginClicked -> handleLogin()
             is UiAction.OnSignUpClicked -> handleSignUp()
             is UiAction.OnForgotPasswordClicked -> handleForgotPassword()
@@ -63,8 +66,11 @@ class LoginViewModel @Inject constructor(
             signInUseCase(currentState.email, currentState.password)
                 .fold(
                     onSuccess = { user ->
+                        // Kullanıcı bilgilerini DataStore'a kaydet
+                        userDataStore.saveUserData(user, rememberMe = currentState.rememberMe)
+
                         updateUiState { copy(isLoading = false) }
-                        emitUiEffect(UiEffect.ShowSuccess("Giriş başarılı! Hoş geldiniz."))
+                        emitUiEffect(UiEffect.ShowSuccess("Giriş başarılı! Hoş geldiniz, ${user.displayName}"))
                         emitUiEffect(UiEffect.NavigateToHome)
                     },
                     onFailure = { exception ->
@@ -82,6 +88,10 @@ class LoginViewModel @Inject constructor(
 
     private fun handleForgotPassword() = viewModelScope.launch {
         emitUiEffect(UiEffect.NavigateToForgotPassword)
+    }
+
+    private fun handleRememberMeChanged(rememberMe: Boolean) {
+        updateUiState { copy(rememberMe = rememberMe) }
     }
 
     private fun validateEmail(email: String): String? {
@@ -103,9 +113,9 @@ class LoginViewModel @Inject constructor(
     private fun validateForm() {
         val currentState = uiState.value
         val isValid = currentState.emailError == null &&
-                currentState.passwordError == null &&
-                currentState.email.isNotBlank() &&
-                currentState.password.isNotBlank()
+            currentState.passwordError == null &&
+            currentState.email.isNotBlank() &&
+            currentState.password.isNotBlank()
 
         updateUiState { copy(isFormValid = isValid) }
     }

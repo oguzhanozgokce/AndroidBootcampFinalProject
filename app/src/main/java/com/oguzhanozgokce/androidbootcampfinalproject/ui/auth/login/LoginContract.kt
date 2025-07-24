@@ -8,13 +8,15 @@ object LoginContract {
         val isPasswordVisible: Boolean = false,
         val emailError: String? = null,
         val passwordError: String? = null,
-        val isFormValid: Boolean = false
+        val isFormValid: Boolean = false,
+        val rememberMe: Boolean = false
     )
 
     sealed class UiAction {
         data class OnEmailChanged(val email: String) : UiAction()
         data class OnPasswordChanged(val password: String) : UiAction()
         data object OnPasswordVisibilityToggled : UiAction()
+        data class OnRememberMeChanged(val rememberMe: Boolean) : UiAction()
         data object OnLoginClicked : UiAction()
         data object OnSignUpClicked : UiAction()
         data object OnForgotPasswordClicked : UiAction()
