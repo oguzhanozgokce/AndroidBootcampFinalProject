@@ -10,21 +10,18 @@ class RegisterScreenPreviewProvider : PreviewParameterProvider<RegisterContract.
                 displayName = "",
                 email = "",
                 password = "",
-                isFormValid = false
             ),
             RegisterContract.UiState(
                 isLoading = false,
                 displayName = "John Doe",
                 email = "john@example.com",
                 password = "123456",
-                isFormValid = true
             ),
             RegisterContract.UiState(
                 isLoading = true,
                 displayName = "John Doe",
                 email = "john@example.com",
                 password = "123456",
-                isFormValid = true
             ),
         )
 }

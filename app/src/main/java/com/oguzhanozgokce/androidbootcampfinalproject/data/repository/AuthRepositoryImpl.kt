@@ -3,7 +3,6 @@ package com.oguzhanozgokce.androidbootcampfinalproject.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
 import com.oguzhanozgokce.androidbootcampfinalproject.common.safeCall
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDomain
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDto
@@ -25,7 +24,7 @@ class AuthRepositoryImpl @Inject constructor(
         private const val COLLECTION_USERS = "users"
     }
 
-    override suspend fun signInWithEmailAndPassword(email: String, password: String): Resource<User> = safeCall {
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<User> = safeCall {
         val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
         val firebaseUser = result.user ?: throw Exception("Sign in failed")
 
@@ -61,7 +60,7 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String,
         displayName: String
-    ): Resource<User> = safeCall {
+    ): Result<User> = safeCall {
         val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
         val firebaseUser = result.user ?: throw Exception("Sign up failed")
 
@@ -88,7 +87,7 @@ class AuthRepositoryImpl @Inject constructor(
         user
     }
 
-    override suspend fun getCurrentUser(): Resource<User?> = safeCall {
+    override suspend fun getCurrentUser(): Result<User?> = safeCall {
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser != null) {
             // Try to get user from Firestore first
@@ -122,7 +121,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCurrentUserFlow(): Flow<Resource<User?>> = callbackFlow {
+    override fun getCurrentUserFlow(): Flow<Result<User?>> = callbackFlow {
         val authStateListener = FirebaseAuth.AuthStateListener { auth ->
             val firebaseUser = auth.currentUser
             if (firebaseUser != null) {
@@ -131,19 +130,19 @@ class AuthRepositoryImpl @Inject constructor(
                     .document(firebaseUser.uid)
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) {
-                            trySend(Resource.Error(error.message ?: "Unknown error"))
+                            trySend(Result.failure(Exception(error.message ?: "Unknown error")))
                             return@addSnapshotListener
                         }
 
                         if (snapshot != null && snapshot.exists()) {
                             val user = snapshot.toObject(UserDto::class.java)?.toDomain()
-                            trySend(Resource.Success(user))
+                            trySend(Result.success(user))
                         } else {
-                            trySend(Resource.Success(null))
+                            trySend(Result.success(null))
                         }
                     }
             } else {
-                trySend(Resource.Success(null))
+                trySend(Result.success(null))
             }
         }
 
@@ -153,7 +152,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateDisplayName(displayName: String): Resource<Unit> = safeCall {
+    override suspend fun updateDisplayName(displayName: String): Result<Unit> = safeCall {
         val currentUser = firebaseAuth.currentUser
             ?: throw Exception("User not authenticated")
 
@@ -173,7 +172,7 @@ class AuthRepositoryImpl @Inject constructor(
             .await()
     }
 
-    override suspend fun signOut(): Resource<Unit> = safeCall {
+    override suspend fun signOut(): Result<Unit> = safeCall {
         firebaseAuth.signOut()
     }
 

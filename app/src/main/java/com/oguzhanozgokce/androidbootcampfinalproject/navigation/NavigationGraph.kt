@@ -14,6 +14,10 @@ import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.GameSetu
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Game
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Score
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Settings
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.login
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.RegisterNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.register
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeScreen
@@ -26,6 +30,7 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.score.ScoreScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.score.ScoreViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsViewModel
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashNavActions
 
 @Composable
 fun NavigationGraph(
@@ -45,9 +50,27 @@ fun NavigationGraph(
             SplashScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                navActions = SplashNavActions(
+                    navigateToLogin = { navController.navigate(Screen.Login) },
+                    navigateToHome = { navController.navigate(Screen.Home) }
+                )
             )
         }
+        login(
+            actions = LoginNavActions(
+                navigateToHome = { navController.navigate(Screen.Home) },
+                navigateToBack = { navController.popBackStack() },
+                navigateToSignUp = { navController.navigate(Screen.Register) },
+                navigateToForgotPassword = { navController.navigate(Screen.ForgotPassword) }
+            )
+        )
+        register(
+            actions = RegisterNavActions(
+                navigateToBack = { navController.popBackStack() },
+                navigateToLogin = { navController.navigate(Screen.Login) }
+            )
+        )
         composable<Home> {
             val viewModel: HomeViewModel = hiltViewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()

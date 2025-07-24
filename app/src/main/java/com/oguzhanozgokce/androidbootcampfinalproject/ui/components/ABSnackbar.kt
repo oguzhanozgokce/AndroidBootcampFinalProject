@@ -101,91 +101,54 @@ fun ABSnackbarContent(
     val colors = getSnackbarColors(type)
     val icon = getSnackbarIcon(type)
 
-    Box(
+    Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .shadow(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(12.dp),
+                elevation = 4.dp,
+                shape = RoundedCornerShape(8.dp),
                 clip = false
             )
-            .clip(RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(8.dp))
             .background(colors.backgroundColor)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Icon
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = colors.iconColor,
-                modifier = Modifier.size(24.dp)
-            )
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = colors.iconColor,
+            modifier = Modifier.size(20.dp)
+        )
 
-            Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
-            // Content
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                // Title (optional)
-                title?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            color = colors.titleColor,
-                            fontSize = 14.sp
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = colors.messageColor,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        if (withDismissAction) {
+            onDismiss?.let { dismiss ->
+                Spacer(modifier = Modifier.width(8.dp))
+                IconButton(
+                    onClick = dismiss,
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Kapat",
+                        tint = colors.dismissColor,
+                        modifier = Modifier.size(16.dp)
                     )
-                }
-
-                // Message
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = colors.messageColor,
-                        fontSize = 13.sp
-                    ),
-                    maxLines = if (title != null) 2 else 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            // Action Button (optional)
-            actionLabel?.let { label ->
-                onActionClick?.let { onClick ->
-                    ABButton(
-                        text = label,
-                        onClick = onClick,
-                        variant = ABButtonVariant.TEXT,
-                        size = ABButtonSize.SMALL,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            }
-
-            // Dismiss Button (optional)
-            if (withDismissAction) {
-                onDismiss?.let { dismiss ->
-                    IconButton(
-                        onClick = dismiss,
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Kapat",
-                            tint = colors.dismissColor,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
                 }
             }
         }
@@ -257,18 +220,48 @@ suspend fun SnackbarHostState.showABSnackbar(
     actionLabel: String? = null,
     withDismissAction: Boolean = true
 ) {
-    val typePrefix = when (type) {
-        ABSnackbarType.SUCCESS -> "✅ "
-        ABSnackbarType.ERROR -> "❌ "
-        ABSnackbarType.WARNING -> "⚠️ "
-        ABSnackbarType.INFO -> "ℹ️ "
-    }
-
     showSnackbar(
-        message = typePrefix + message,
+        message = message,
         actionLabel = actionLabel,
         withDismissAction = withDismissAction
     )
+}
+
+@Composable
+private fun getSnackbarColors(type: ABSnackbarType): SnackbarColors {
+    return when (type) {
+        ABSnackbarType.SUCCESS -> SnackbarColors(
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            iconColor = Color(0xFF4CAF50),
+            titleColor = MaterialTheme.colorScheme.onSurface,
+            messageColor = MaterialTheme.colorScheme.onSurface,
+            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        ABSnackbarType.ERROR -> SnackbarColors(
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            iconColor = Color(0xFFF44336),
+            titleColor = MaterialTheme.colorScheme.onSurface,
+            messageColor = MaterialTheme.colorScheme.onSurface,
+            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        ABSnackbarType.WARNING -> SnackbarColors(
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            iconColor = Color(0xFFFF9800),
+            titleColor = MaterialTheme.colorScheme.onSurface,
+            messageColor = MaterialTheme.colorScheme.onSurface,
+            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        ABSnackbarType.INFO -> SnackbarColors(
+            backgroundColor = MaterialTheme.colorScheme.surface,
+            iconColor = Color(0xFF2196F3),
+            titleColor = MaterialTheme.colorScheme.onSurface,
+            messageColor = MaterialTheme.colorScheme.onSurface,
+            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
 }
 
 private data class SnackbarColors(
@@ -278,43 +271,6 @@ private data class SnackbarColors(
     val messageColor: Color,
     val dismissColor: Color
 )
-
-@Composable
-private fun getSnackbarColors(type: ABSnackbarType): SnackbarColors {
-    return when (type) {
-        ABSnackbarType.SUCCESS -> SnackbarColors(
-            backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
-            iconColor = MaterialTheme.colorScheme.secondary,
-            titleColor = MaterialTheme.colorScheme.onSurface,
-            messageColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        ABSnackbarType.ERROR -> SnackbarColors(
-            backgroundColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
-            iconColor = MaterialTheme.colorScheme.error,
-            titleColor = MaterialTheme.colorScheme.onSurface,
-            messageColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        ABSnackbarType.WARNING -> SnackbarColors(
-            backgroundColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
-            iconColor = MaterialTheme.colorScheme.tertiary,
-            titleColor = MaterialTheme.colorScheme.onSurface,
-            messageColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        ABSnackbarType.INFO -> SnackbarColors(
-            backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-            iconColor = MaterialTheme.colorScheme.primary,
-            titleColor = MaterialTheme.colorScheme.onSurface,
-            messageColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            dismissColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
 
 private fun getSnackbarIcon(type: ABSnackbarType): ImageVector {
     return when (type) {

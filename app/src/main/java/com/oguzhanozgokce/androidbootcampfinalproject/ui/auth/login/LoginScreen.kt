@@ -231,7 +231,7 @@ fun LoginContent(
                     )
 
                     SocialButton(
-                        onClick = { },
+                        onClick = { onAction(UiAction.OnSignUpClicked) },
                         backgroundColor = Color(0xFF1877F2),
                         iconRes = R.drawable.ic_launcher_foreground
                     )
@@ -263,7 +263,7 @@ private fun LoginForm(
         ABTextField(
             value = uiState.email,
             onValueChange = { onAction(UiAction.OnEmailChanged(it)) },
-            placeholder = "joedoe75@gmail.com",
+            placeholder = "Email",
             leadingIcon = Icons.Default.Email,
             isError = uiState.emailError != null,
             errorMessage = uiState.emailError,
@@ -285,7 +285,7 @@ private fun LoginForm(
         ABTextField(
             value = uiState.password,
             onValueChange = { onAction(UiAction.OnPasswordChanged(it)) },
-            placeholder = "••••••••",
+            placeholder = "Password",
             leadingIcon = Icons.Default.Lock,
             visualTransformation = if (uiState.isPasswordVisible) {
                 VisualTransformation.None

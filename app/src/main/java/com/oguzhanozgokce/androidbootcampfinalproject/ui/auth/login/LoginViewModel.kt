@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase.SignInUseCase
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
+import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.ErrorHandler
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiState
@@ -60,19 +60,19 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             updateUiState { copy(isLoading = true) }
 
-            when (val result = signInUseCase(currentState.email, currentState.password)) {
-                is Resource.Success -> {
-                    updateUiState { copy(isLoading = false) }
-                    emitUiEffect(UiEffect.ShowSuccess("Giriş başarılı! Hoş geldiniz."))
-                    emitUiEffect(UiEffect.NavigateToHome)
-                }
-
-                is Resource.Error -> {
-                    updateUiState { copy(isLoading = false) }
-                    emitUiEffect(UiEffect.ShowError(result.message ?: "Giriş yapılırken hata oluştu"))
-                }
-                
-            }
+            signInUseCase(currentState.email, currentState.password)
+                .fold(
+                    onSuccess = { user ->
+                        updateUiState { copy(isLoading = false) }
+                        emitUiEffect(UiEffect.ShowSuccess("Giriş başarılı! Hoş geldiniz."))
+                        emitUiEffect(UiEffect.NavigateToHome)
+                    },
+                    onFailure = { exception ->
+                        updateUiState { copy(isLoading = false) }
+                        val errorMessage = ErrorHandler.handleException(exception)
+                        emitUiEffect(UiEffect.ShowError(errorMessage))
+                    }
+                )
         }
     }
 

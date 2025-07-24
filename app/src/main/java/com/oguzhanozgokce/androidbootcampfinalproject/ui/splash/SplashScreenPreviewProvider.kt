@@ -7,15 +7,15 @@ class SplashScreenPreviewProvider : PreviewParameterProvider<SplashContract.UiSt
         get() = sequenceOf(
             SplashContract.UiState(
                 isLoading = true,
-                list = emptyList(),
+                isCheckingAuth = true
             ),
             SplashContract.UiState(
                 isLoading = false,
-                list = emptyList(),
+                isCheckingAuth = false
             ),
             SplashContract.UiState(
-                isLoading = false,
-                list = listOf("Item 1", "Item 2", "Item 3")
+                isLoading = true,
+                isCheckingAuth = false
             ),
         )
 }

@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.oguzhanozgokce.androidbootcampfinalproject.R
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.RegisterContract.UiAction
@@ -182,7 +181,6 @@ fun RegisterContent(
                         modifier = Modifier.fillMaxWidth(),
                         variant = ABButtonVariant.PRIMARY,
                         size = ABButtonSize.LARGE,
-                        enabled = uiState.isFormValid && !uiState.isLoading,
                         loading = uiState.isLoading,
                         fullWidth = true
                     )
@@ -227,8 +225,6 @@ private fun RegisterForm(
             onValueChange = { onAction(UiAction.OnDisplayNameChanged(it)) },
             placeholder = "John Doe",
             leadingIcon = Icons.Default.Person,
-            isError = uiState.displayNameError != null,
-            errorMessage = uiState.displayNameError,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text
             ),
@@ -248,8 +244,6 @@ private fun RegisterForm(
             onValueChange = { onAction(UiAction.OnEmailChanged(it)) },
             placeholder = "johndoe@gmail.com",
             leadingIcon = Icons.Default.Email,
-            isError = uiState.emailError != null,
-            errorMessage = uiState.emailError,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email
             ),
@@ -274,8 +268,6 @@ private fun RegisterForm(
             } else {
                 PasswordVisualTransformation()
             },
-            isError = uiState.passwordError != null,
-            errorMessage = uiState.passwordError,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password
             ),

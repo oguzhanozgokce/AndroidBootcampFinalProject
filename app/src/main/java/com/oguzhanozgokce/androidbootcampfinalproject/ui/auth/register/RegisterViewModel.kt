@@ -2,7 +2,6 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
 import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase.SignUpUseCase
@@ -32,43 +31,19 @@ class RegisterViewModel @Inject constructor(
 
     private fun updateDisplayName(displayName: String) {
         updateUiState {
-            copy(
-                displayName = displayName,
-                displayNameError = validateDisplayName(displayName),
-                isFormValid = isFormValid(
-                    displayName = displayName,
-                    email = uiState.value.email,
-                    password = uiState.value.password
-                )
-            )
+            copy(displayName = displayName)
         }
     }
 
     private fun updateEmail(email: String) {
         updateUiState {
-            copy(
-                email = email,
-                emailError = validateEmail(email),
-                isFormValid = isFormValid(
-                    displayName = uiState.value.displayName,
-                    email = email,
-                    password = uiState.value.password
-                )
-            )
+            copy(email = email)
         }
     }
 
     private fun updatePassword(password: String) {
         updateUiState {
-            copy(
-                password = password,
-                passwordError = validatePassword(password),
-                isFormValid = isFormValid(
-                    displayName = uiState.value.displayName,
-                    email = uiState.value.email,
-                    password = password
-                )
-            )
+            copy(password = password)
         }
     }
 
@@ -77,33 +52,27 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun register() {
-        if (!uiState.value.isFormValid) return
-
         viewModelScope.launch {
             updateUiState { copy(isLoading = true) }
 
-            try {
-                val currentUiState = uiState.value
+            val currentUiState = uiState.value
 
-                when (val result = signUpUseCase(
-                    email = currentUiState.email,
-                    password = currentUiState.password,
-                    displayName = currentUiState.displayName
-                )) {
-                    is Resource.Success -> {
-                        emitUiEffect(UiEffect.ShowSuccess("Hesap başarıyla oluşturuldu!"))
-                        delay(1000)
-                        emitUiEffect(UiEffect.NavigateToLogin)
-                    }
-                    is Resource.Error -> {
-                        emitUiEffect(UiEffect.ShowError(result.message ?: "Kayıt sırasında hata oluştu"))
-                    }
+            signUpUseCase(
+                email = currentUiState.email,
+                password = currentUiState.password,
+                displayName = currentUiState.displayName
+            ).fold(
+                onSuccess = {
+                    updateUiState { copy(isLoading = false) }
+                    emitUiEffect(UiEffect.ShowSuccess("Hesap başarıyla oluşturuldu!"))
+                    delay(1000)
+                    emitUiEffect(UiEffect.NavigateToLogin)
+                },
+                onFailure = { exception ->
+                    updateUiState { copy(isLoading = false) }
+                    emitUiEffect(UiEffect.ShowError(exception.message ?: "Kayıt sırasında hata oluştu"))
                 }
-            } catch (e: Exception) {
-                emitUiEffect(UiEffect.ShowError("Beklenmeyen bir hata oluştu: ${e.message}"))
-            } finally {
-                updateUiState { copy(isLoading = false) }
-            }
+            )
         }
     }
 
@@ -111,39 +80,5 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             emitUiEffect(UiEffect.NavigateToLogin)
         }
-    }
-
-    private fun validateDisplayName(displayName: String): String? {
-        return when {
-            displayName.isBlank() -> "İsim alanı zorunludur"
-            displayName.length < 2 -> "İsim en az 2 karakter olmalıdır"
-            else -> null
-        }
-    }
-
-    private fun validateEmail(email: String): String? {
-        return when {
-            email.isBlank() -> "E-posta alanı zorunludur"
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Geçerli bir e-posta adresi girin"
-            else -> null
-        }
-    }
-
-    private fun validatePassword(password: String): String? {
-        return when {
-            password.isBlank() -> "Şifre alanı zorunludur"
-            password.length < 6 -> "Şifre en az 6 karakter olmalıdır"
-            else -> null
-        }
-    }
-
-    private fun isFormValid(
-        displayName: String,
-        email: String,
-        password: String
-    ): Boolean {
-        return validateDisplayName(displayName) == null &&
-                validateEmail(email) == null &&
-                validatePassword(password) == null
     }
 }

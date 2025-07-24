@@ -7,11 +7,7 @@ object RegisterContract {
         val displayName: String = "",
         val email: String = "",
         val password: String = "",
-        val isPasswordVisible: Boolean = false,
-        val displayNameError: String? = null,
-        val emailError: String? = null,
-        val passwordError: String? = null,
-        val isFormValid: Boolean = false
+        val isPasswordVisible: Boolean = false
     )
 
     sealed class UiAction {
