@@ -8,29 +8,29 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Splash
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Home
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.GameSetup
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Game
+import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.GameSetup
+import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Home
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Score
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Settings
+import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Splash
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.login
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.RegisterNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.register
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashScreen
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashViewModel
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeScreen
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeViewModel
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupScreen
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.game.GameScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.game.GameViewModel
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupScreen
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupViewModel
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeScreen
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.score.ScoreScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.score.ScoreViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashScreen
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashViewModel
 
 @Composable
 fun NavigationGraph(
@@ -78,7 +78,8 @@ fun NavigationGraph(
             HomeScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onNavigateToGameSetup = { navController.navigate(Screen.GameSetup) },
             )
         }
         composable<GameSetup> {
@@ -88,7 +89,10 @@ fun NavigationGraph(
             GameSetupScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onNavigateToGame = { difficulty ->
+                    navController.navigate(Game(difficulty))
+                }
             )
         }
         composable<Game> {

@@ -39,12 +39,12 @@ val DarkError = Color(0xFFFF453A)
 val DarkOnError = Color(0xFFFFFFFF)
 
 // Game Specific Colors
-val CardBackground = Color(0xFF6366F1)
-val CardBackgroundDark = Color(0xFF4F46E5)
-val CardMatched = Color(0xFF10B981)
-val CardMatchedDark = Color(0xFF059669)
-val CardFlipped = Color(0xFFF59E0B)
-val CardFlippedDark = Color(0xFFD97706)
+val CardBackground = Color(0xFF0891B2)
+val CardBackgroundDark = Color(0xFF0E7490)
+val CardMatched = Color(0xFF48BB78)
+val CardMatchedDark = Color(0xFF38A169)
+val CardFlipped = Color(0xFFED8936)
+val CardFlippedDark = Color(0xFFDD6B20)
 
 // Text Field Colors
 val TextFieldBackground = Color(0xFFF2F2F7)
@@ -53,3 +53,11 @@ val TextFieldBorder = Color(0xFFE5E5EA)
 val TextFieldBorderDark = Color(0xFF38383A)
 val TextFieldFocused = Color(0xFF007AFF)
 val TextFieldFocusedDark = Color(0xFF0A84FF)
+
+// Home Screen Stat Colors
+val StatGamesPlayed = Color(0xFF34C759)
+val StatGamesPlayedDark = Color(0xFF30D158)
+val StatBestScore = Color(0xFFFF9500)
+val StatBestScoreDark = Color(0xFFFF9F0A)
+val StatWinRate = Color(0xFF007AFF)
+val StatWinRateDark = Color(0xFF0A84FF)

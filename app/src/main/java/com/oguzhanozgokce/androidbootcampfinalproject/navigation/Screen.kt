@@ -1,5 +1,6 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.navigation
 
+import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.GameDifficulty
 import kotlinx.serialization.Serializable
 
 sealed interface Screen {
@@ -19,7 +20,7 @@ sealed interface Screen {
     data object GameSetup : Screen
 
     @Serializable
-    data object Game : Screen
+    data class Game(val difficulty: GameDifficulty) : Screen
 
     @Serializable
     data object Score : Screen

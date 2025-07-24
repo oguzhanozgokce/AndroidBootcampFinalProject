@@ -10,12 +10,10 @@ class FlipCardUseCase @Inject constructor() {
         val cardToFlip = gameState.cards.find { it.id == cardId }
             ?: return gameState
 
-        // Kart zaten açık veya eşleşmiş ise işlem yapma
         if (cardToFlip.isFlipped || cardToFlip.isMatched) {
             return gameState
         }
 
-        // İki kart açık ise işlem yapma
         if (gameState.flippedCards.size >= 2) {
             return gameState
         }
@@ -31,13 +29,11 @@ class FlipCardUseCase @Inject constructor() {
         val newFlippedCards = gameState.flippedCards + cardToFlip.copy(isFlipped = true)
         val newTotalMoves = gameState.totalMoves + 1
 
-        // İki kart açıldıysa eşleşme kontrolü
         if (newFlippedCards.size == 2) {
             val firstCard = newFlippedCards[0]
             val secondCard = newFlippedCards[1]
 
             if (firstCard.number == secondCard.number) {
-                // Eşleşme var
                 val matchedCards = updatedCards.map { card ->
                     if (card.id == firstCard.id || card.id == secondCard.id) {
                         card.copy(isMatched = true, isFlipped = true)
@@ -49,7 +45,7 @@ class FlipCardUseCase @Inject constructor() {
                 val newMatchedPairs = gameState.matchedPairs + 1
                 val newScore = calculateScore(
                     matchedPairs = newMatchedPairs,
-                    timeUsed = 60L - gameState.timeRemaining,
+                    timeUsed = (60L - gameState.timeRemaining),
                     difficulty = gameState.difficulty,
                     totalTime = 60
                 )

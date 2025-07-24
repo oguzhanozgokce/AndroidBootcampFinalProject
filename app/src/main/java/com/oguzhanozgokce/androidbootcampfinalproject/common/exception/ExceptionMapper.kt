@@ -1,6 +1,5 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.common.exception
 
-import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthException

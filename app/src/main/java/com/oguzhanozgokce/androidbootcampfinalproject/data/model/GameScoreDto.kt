@@ -1,8 +1,5 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.data.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class GameScoreDto(
     val id: String? = null,
     val userId: String? = null,
@@ -13,4 +10,7 @@ data class GameScoreDto(
     val completedTime: Long? = null,
     val timestamp: Long = System.currentTimeMillis(),
     val isCompleted: Boolean? = null
-)
+) {
+    // Firebase Firestore requires a no-argument constructor
+    constructor() : this(null, null, null, null, null, null, null, System.currentTimeMillis(), null)
+}
