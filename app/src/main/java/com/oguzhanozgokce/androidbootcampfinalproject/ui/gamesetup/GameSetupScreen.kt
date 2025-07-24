@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.GameDifficulty
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABBaseScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButton
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonSize
@@ -60,7 +61,7 @@ fun GameSetupScreen(
     uiState: UiState,
     uiEffect: Flow<UiEffect>,
     onAction: (UiAction) -> Unit,
-    onNavigateToGame: (DifficultyLevel) -> Unit = {},
+    onNavigateToGame: (GameDifficulty) -> Unit = {},
     onNavigateBack: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -143,18 +144,12 @@ fun GameSetupContent(
             }
         )
 
-        // Game Info Section
         GameInfoSection(
             selectedDifficulty = uiState.availableDifficulties.find {
                 it.level == uiState.selectedDifficulty
             } ?: uiState.availableDifficulties.first()
         )
-
-        // Game Rules Section
         GameRulesSection()
-
-        // Start Game Button
-
     }
 }
 
@@ -200,9 +195,9 @@ private fun HeaderSection() {
 
 @Composable
 private fun DifficultySelectionSection(
-    selectedDifficulty: DifficultyLevel,
+    selectedDifficulty: GameDifficulty,
     difficulties: List<DifficultyInfo>,
-    onDifficultySelected: (DifficultyLevel) -> Unit
+    onDifficultySelected: (GameDifficulty) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -236,9 +231,9 @@ private fun DifficultyCard(
     onClick: () -> Unit
 ) {
     val cardColor = when (difficulty.level) {
-        DifficultyLevel.EASY -> Color(0xFF4CAF50)
-        DifficultyLevel.MEDIUM -> Color(0xFFFF9800)
-        DifficultyLevel.HARD -> Color(0xFFF44336)
+        GameDifficulty.EASY -> Color(0xFF4CAF50)
+        GameDifficulty.MEDIUM -> Color(0xFFFF9800)
+        GameDifficulty.HARD -> Color(0xFFF44336)
     }
 
     Card(
@@ -287,7 +282,7 @@ private fun DifficultyCard(
                     )
                 } else {
                     Text(
-                        text = difficulty.cardCount.toString(),
+                        text = difficulty.level.cardCount.toString(),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = cardColor
@@ -305,7 +300,7 @@ private fun DifficultyCard(
             )
 
             Text(
-                text = "${difficulty.cardCount} Kart",
+                text = "${difficulty.level.cardCount} Kart",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -365,7 +360,7 @@ private fun GameInfoSection(selectedDifficulty: DifficultyInfo) {
                 GameInfoItem(
                     icon = "🃏",
                     title = "Kart Sayısı",
-                    description = "${selectedDifficulty.cardCount} kart (${selectedDifficulty.cardCount / 2} çift)"
+                    description = "${selectedDifficulty.level.cardCount} kart (${selectedDifficulty.level.cardCount / 2} çift)"
                 )
 
                 GameInfoItem(

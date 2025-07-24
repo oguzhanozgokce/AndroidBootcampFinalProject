@@ -1,11 +1,11 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.ErrorHandler
 import com.oguzhanozgokce.androidbootcampfinalproject.common.safeCall
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDomainList
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDto
+import com.oguzhanozgokce.androidbootcampfinalproject.data.model.GameCardDto
 import com.oguzhanozgokce.androidbootcampfinalproject.data.model.GameScoreDto
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.GameScore
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.repository.GameScoreRepository
@@ -28,7 +28,7 @@ class GameScoreRepositoryImpl @Inject constructor(
         val docRef = if (scoreDto.id.isNullOrEmpty()) {
             firestore.collection(COLLECTION_SCORES).document()
         } else {
-            firestore.collection(COLLECTION_SCORES).document(scoreDto.id!!)
+            firestore.collection(COLLECTION_SCORES).document(scoreDto.id)
         }
 
         val scoreWithId = scoreDto.copy(id = docRef.id)
@@ -43,14 +43,12 @@ class GameScoreRepositoryImpl @Inject constructor(
     override suspend fun getAllScoresByUserId(userId: String): Result<List<GameScore>> = safeCall {
         val snapshot = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
-            .orderBy("score", Query.Direction.DESCENDING)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .await()
 
         snapshot.documents.mapNotNull { doc ->
             doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
-        }.toDomainList()
+        }.toDomainList().sortedByDescending { it.score }
     }
 
     override suspend fun getTopScores(limit: Int): Result<List<GameScore>> = safeCall {
@@ -60,15 +58,14 @@ class GameScoreRepositoryImpl @Inject constructor(
     override suspend fun getTopScoresByUserId(userId: String, limit: Int): Result<List<GameScore>> = safeCall {
         val snapshot = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
-            .orderBy("score", Query.Direction.DESCENDING)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .limit(limit.toLong())
             .get()
             .await()
 
         snapshot.documents.mapNotNull { doc ->
             doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
         }.toDomainList()
+            .sortedByDescending { it.score } // Client-side sorting
+            .take(limit) // Client-side limit
     }
 
     override suspend fun deleteScore(scoreId: String): Result<Unit> = safeCall {
@@ -102,8 +99,6 @@ class GameScoreRepositoryImpl @Inject constructor(
     override fun getScoresFlowByUserId(userId: String): Flow<Result<List<GameScore>>> = callbackFlow {
         val listener = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
-            .orderBy("score", Query.Direction.DESCENDING)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     val errorMessage = ErrorHandler.handleException(error)
@@ -115,10 +110,46 @@ class GameScoreRepositoryImpl @Inject constructor(
                     val scores = snapshot.documents.mapNotNull { doc ->
                         doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
                     }.toDomainList()
+                        .sortedByDescending { it.score } // Client-side sorting
                     trySend(Result.success(scores))
                 }
             }
 
         awaitClose { listener.remove() }
+    }
+
+    /**
+     * Oyun için rastgele sayıları Firebase'den çekmek için
+     */
+    override suspend fun getRandomNumbers(count: Int): Result<List<Int>> = safeCall {
+        android.util.Log.d("GameScoreRepo", "getRandomNumbers called with count: $count")
+
+        val snapshot = firestore.collection("game_numbers")
+            .limit(100)
+            .get()
+            .await()
+
+        android.util.Log.d("GameScoreRepo", "Firebase snapshot size: ${snapshot.documents.size}")
+
+        val allNumbers = snapshot.documents.mapNotNull { doc ->
+            android.util.Log.d("GameScoreRepo", "Processing document: ${doc.id}")
+            val gameCardDto = doc.toObject(GameCardDto::class.java)
+            android.util.Log.d("GameScoreRepo", "GameCardDto: $gameCardDto")
+            gameCardDto?.number
+        }
+
+        android.util.Log.d("GameScoreRepo", "All numbers extracted: ${allNumbers.size}")
+
+        val result = if (allNumbers.isEmpty()) {
+            android.util.Log.d("GameScoreRepo", "Using fallback local generation")
+            // Fallback: Generate random numbers locally if Firebase collection is empty
+            (1..100).shuffled().take(count)
+        } else {
+            android.util.Log.d("GameScoreRepo", "Using Firebase numbers")
+            allNumbers.shuffled().take(count)
+        }
+
+        android.util.Log.d("GameScoreRepo", "Final result: ${result.size} numbers")
+        result
     }
 }

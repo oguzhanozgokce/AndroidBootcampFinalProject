@@ -16,6 +16,14 @@ class GameSetupViewModel @Inject constructor() : ViewModel(), MVI<UiState, UiAct
 
     override fun onAction(uiAction: UiAction) {
         viewModelScope.launch {
+            when (uiAction) {
+                is UiAction.OnDifficultyChanged -> updateUiState { copy(selectedDifficulty = uiAction.difficulty) }
+                is UiAction.OnStartGameClicked -> startGame()
+            }
         }
+    }
+
+    private fun startGame() = viewModelScope.launch {
+        emitUiEffect(UiEffect.NavigateToGame(currentUiState.selectedDifficulty))
     }
 }

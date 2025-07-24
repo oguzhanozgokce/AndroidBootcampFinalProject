@@ -14,4 +14,5 @@ interface GameScoreRepository {
     suspend fun clearAllScoresByUserId(userId: String): Result<Unit>
     fun getScoresFlow(): Flow<Result<List<GameScore>>>
     fun getScoresFlowByUserId(userId: String): Flow<Result<List<GameScore>>>
+    suspend fun getRandomNumbers(count: Int): Result<List<Int>>
 }
