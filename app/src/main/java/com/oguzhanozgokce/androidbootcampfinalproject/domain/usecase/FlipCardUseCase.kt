@@ -23,7 +23,9 @@ class FlipCardUseCase @Inject constructor() {
         val updatedCards = gameState.cards.map { card ->
             if (card.id == cardId) {
                 card.copy(isFlipped = true)
-            } else card
+            } else {
+                card
+            }
         }
 
         val newFlippedCards = gameState.flippedCards + cardToFlip.copy(isFlipped = true)
@@ -39,7 +41,9 @@ class FlipCardUseCase @Inject constructor() {
                 val matchedCards = updatedCards.map { card ->
                     if (card.id == firstCard.id || card.id == secondCard.id) {
                         card.copy(isMatched = true, isFlipped = true)
-                    } else card
+                    } else {
+                        card
+                    }
                 }
 
                 val newMatchedPairs = gameState.matchedPairs + 1
@@ -74,7 +78,9 @@ class FlipCardUseCase @Inject constructor() {
         val updatedCards = gameState.cards.map { card ->
             if (card.isFlipped && !card.isMatched) {
                 card.copy(isFlipped = false)
-            } else card
+            } else {
+                card
+            }
         }
 
         return gameState.copy(

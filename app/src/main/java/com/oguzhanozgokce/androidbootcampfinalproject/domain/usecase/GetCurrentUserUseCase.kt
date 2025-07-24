@@ -1,6 +1,5 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase
 
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.User
 import com.oguzhanozgokce.androidbootcampfinalproject.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
