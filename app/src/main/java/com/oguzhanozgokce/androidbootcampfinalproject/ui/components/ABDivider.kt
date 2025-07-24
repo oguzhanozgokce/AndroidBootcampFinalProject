@@ -113,7 +113,7 @@ fun ABDividerWithText(
 private fun getDividerColor(variant: ABDividerVariant): Color {
     return when (variant) {
         ABDividerVariant.SOLID -> MaterialTheme.colorScheme.outline
-        ABDividerVariant.LIGHT -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
+        ABDividerVariant.LIGHT -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
         ABDividerVariant.MEDIUM -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
         ABDividerVariant.HEAVY -> MaterialTheme.colorScheme.outline.copy(alpha = 0.8f)
     }
@@ -122,7 +122,7 @@ private fun getDividerColor(variant: ABDividerVariant): Color {
 private fun getDividerThickness(variant: ABDividerVariant): Dp {
     return when (variant) {
         ABDividerVariant.SOLID -> 1.dp
-        ABDividerVariant.LIGHT -> 0.5.dp
+        ABDividerVariant.LIGHT -> 1.dp
         ABDividerVariant.MEDIUM -> 1.dp
         ABDividerVariant.HEAVY -> 1.5.dp
     }

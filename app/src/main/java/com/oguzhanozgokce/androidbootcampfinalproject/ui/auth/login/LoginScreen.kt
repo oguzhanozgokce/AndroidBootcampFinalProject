@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -118,65 +119,94 @@ fun LoginContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
+            .background(
+                brush = androidx.compose.ui.graphics.Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            )
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Memory Game",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.padding(bottom = 40.dp)
-            )
+            // App Logo and Title Section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // App Icon
+                Image(
+                    painter = painterResource(id = R.drawable.ic_puzzle),
+                    contentDescription = "Memory Game Logo",
+                    modifier = Modifier.size(80.dp),
+                )
 
+                Text(
+                    text = "Fun Time",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+
+                Text(
+                    text = "Challenge your mind with our puzzle games",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            // Login Card
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(),
-                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(32.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
+                    // Welcome Text
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Welcome to",
-                            style = MaterialTheme.typography.headlineSmall.copy(
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        )
-                        Text(
-                            text = "Memory Game login now!",
-                            style = MaterialTheme.typography.headlineSmall.copy(
+                            text = "Welcome Back!",
+                            style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         )
+                        Text(
+                            text = "Sign in to continue your journey",
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
                     }
 
+                    // Login Form
                     LoginForm(
                         uiState = uiState,
                         onAction = onAction
                     )
 
+                    // Remember Me and Forgot Password
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -189,6 +219,7 @@ fun LoginContent(
                                 checked = false,
                                 onCheckedChange = { },
                                 colors = CheckboxDefaults.colors(
+                                    checkedColor = MaterialTheme.colorScheme.primary,
                                     uncheckedColor = MaterialTheme.colorScheme.outline
                                 )
                             )
@@ -203,7 +234,8 @@ fun LoginContent(
                         Text(
                             text = "Forgot password?",
                             style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
                             ),
                             modifier = Modifier.clickable {
                                 onAction(UiAction.OnForgotPasswordClicked)
@@ -211,10 +243,13 @@ fun LoginContent(
                         )
                     }
 
+                    // Login Button
                     ABButton(
-                        text = "Login",
+                        text = "Sign In",
                         onClick = { onAction(UiAction.OnLoginClicked) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
                         variant = ABButtonVariant.PRIMARY,
                         size = ABButtonSize.LARGE,
                         enabled = uiState.isFormValid && !uiState.isLoading,
@@ -222,23 +257,49 @@ fun LoginContent(
                         fullWidth = true
                     )
 
-                    Text(
-                        text = "Or Sign in with",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
+                    // Divider
+                    ABDividerWithText(
+                        text = "Or continue with",
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
-                    SocialButton(
-                        onClick = { onAction(UiAction.OnSignUpClicked) },
-                        backgroundColor = Color(0xFF1877F2),
-                        iconRes = R.drawable.ic_launcher_foreground
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+                    ) {
+                        SocialButton(
+                            onClick = { /* Google Sign In */ },
+                            backgroundColor = Color.White,
+                            iconRes = R.drawable.ic_google,
+                            text = "Google"
+                        )
+                    }
+
+                    // Sign Up Link
+                    Row(
+                        modifier = Modifier.padding(top = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Don't have an account? ",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                        Text(
+                            text = "Sign Up",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.clickable {
+                                onAction(UiAction.OnSignUpClicked)
+                            }
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -249,7 +310,7 @@ private fun LoginForm(
     onAction: (UiAction) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = "Email",
@@ -257,7 +318,6 @@ private fun LoginForm(
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
             ),
-            modifier = Modifier.padding(bottom = 4.dp)
         )
 
         ABTextField(
@@ -279,7 +339,7 @@ private fun LoginForm(
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
             ),
-            modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+            modifier = Modifier.padding(top = 8.dp)
         )
 
         ABTextField(
@@ -306,26 +366,46 @@ private fun LoginForm(
 private fun SocialButton(
     onClick: () -> Unit,
     backgroundColor: Color,
-    iconRes: Int
+    iconRes: Int,
+    text: String
 ) {
-    Box(
+    Card(
         modifier = Modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
+            .fillMaxWidth()
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            colorFilter = if (backgroundColor == Color.White) {
-                null
-            } else {
-                ColorFilter.tint(Color.White)
-            }
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 14.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+
+            Spacer(modifier = Modifier.size(12.dp))
+
+            Text(
+                text = "Continue with $text",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = if (backgroundColor == Color.White) {
+                        Color.Black
+                    } else {
+                        Color.White
+                    },
+                    fontWeight = FontWeight.Medium
+                )
+            )
+        }
     }
 }
 
