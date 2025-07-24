@@ -8,6 +8,9 @@ import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen
 
 data class LoginNavActions(
     val navigateToBack: () -> Unit,
+    val navigateToSignUp: () -> Unit = {},
+    val navigateToForgotPassword: () -> Unit = {},
+    val navigateToHome: () -> Unit = {},
 ) {
     companion object {
         val default = LoginNavActions(

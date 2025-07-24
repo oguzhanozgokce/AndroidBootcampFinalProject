@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.NavigationGraph
 import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Splash
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.MyappTheme
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.MemoryGameTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MyappTheme {
+            MemoryGameTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
                     val startDestination = Splash

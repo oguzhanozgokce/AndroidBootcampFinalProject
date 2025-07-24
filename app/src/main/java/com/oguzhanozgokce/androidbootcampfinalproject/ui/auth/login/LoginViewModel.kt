@@ -1,37 +1,112 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.oguzhanozgokce.androidbootcampfinalproject.delegation.MVI
+import com.oguzhanozgokce.androidbootcampfinalproject.delegation.mvi
+import com.oguzhanozgokce.androidbootcampfinalproject.domain.usecase.SignInUseCase
+import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val signInUseCase: SignInUseCase
+) : ViewModel(), MVI<UiState, UiAction, UiEffect> by mvi(UiState()) {
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-    private val _uiEffect by lazy { Channel<UiEffect>() }
-    val uiEffect: Flow<UiEffect> by lazy { _uiEffect.receiveAsFlow() }
-
-    fun onAction(uiAction: UiAction) {
+    override fun onAction(uiAction: UiAction) {
+        when (uiAction) {
+            is UiAction.OnEmailChanged -> handleEmailChanged(uiAction.email)
+            is UiAction.OnPasswordChanged -> handlePasswordChanged(uiAction.password)
+            is UiAction.OnPasswordVisibilityToggled -> togglePasswordVisibility()
+            is UiAction.OnLoginClicked -> handleLogin()
+            is UiAction.OnSignUpClicked -> handleSignUp()
+            is UiAction.OnForgotPasswordClicked -> handleForgotPassword()
+        }
     }
 
-    private fun updateUiState(block: UiState.() -> UiState) {
-        _uiState.update(block)
+    private fun handleEmailChanged(email: String) {
+        updateUiState {
+            copy(
+                email = email,
+                emailError = validateEmail(email)
+            )
+        }
+        validateForm()
     }
 
-    private suspend fun emitUiEffect(uiEffect: UiEffect) {
-        _uiEffect.send(uiEffect)
+    private fun handlePasswordChanged(password: String) {
+        updateUiState {
+            copy(
+                password = password,
+                passwordError = validatePassword(password)
+            )
+        }
+        validateForm()
+    }
+
+    private fun togglePasswordVisibility() {
+        updateUiState { copy(isPasswordVisible = !isPasswordVisible) }
+    }
+
+    private fun handleLogin() {
+        val currentState = uiState.value
+        if (!currentState.isFormValid) return
+
+        viewModelScope.launch {
+            updateUiState { copy(isLoading = true) }
+
+            when (val result = signInUseCase(currentState.email, currentState.password)) {
+                is Resource.Success -> {
+                    updateUiState { copy(isLoading = false) }
+                    emitUiEffect(UiEffect.ShowSuccess("Giriş başarılı! Hoş geldiniz."))
+                    emitUiEffect(UiEffect.NavigateToHome)
+                }
+
+                is Resource.Error -> {
+                    updateUiState { copy(isLoading = false) }
+                    emitUiEffect(UiEffect.ShowError(result.message ?: "Giriş yapılırken hata oluştu"))
+                }
+                
+            }
+        }
+    }
+
+    private fun handleSignUp() = viewModelScope.launch {
+        emitUiEffect(UiEffect.NavigateToSignUp)
+    }
+
+    private fun handleForgotPassword() = viewModelScope.launch {
+        emitUiEffect(UiEffect.NavigateToForgotPassword)
+    }
+
+    private fun validateEmail(email: String): String? {
+        return when {
+            email.isBlank() -> "E-posta adresi gerekli"
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Geçerli bir e-posta adresi girin"
+            else -> null
+        }
+    }
+
+    private fun validatePassword(password: String): String? {
+        return when {
+            password.isBlank() -> "Şifre gerekli"
+            password.length < 6 -> "Şifre en az 6 karakter olmalı"
+            else -> null
+        }
+    }
+
+    private fun validateForm() {
+        val currentState = uiState.value
+        val isValid = currentState.emailError == null &&
+                currentState.passwordError == null &&
+                currentState.email.isNotBlank() &&
+                currentState.password.isNotBlank()
+
+        updateUiState { copy(isFormValid = isValid) }
     }
 }
-

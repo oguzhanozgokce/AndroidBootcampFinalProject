@@ -1,27 +1,63 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.sp
-import com.oguzhanozgokce.finishmarmarab2b.core.common.extension.showToast
-import com.oguzhanozgokce.finishmarmarab2b.core.presentation.components.FMBaseScreen
-import com.oguzhanozgokce.finishmarmarab2b.ui.theme.FMTheme
+import androidx.compose.ui.unit.dp
+import com.oguzhanozgokce.androidbootcampfinalproject.R
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginContract.UiState
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.navigation.LoginNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABBaseScreen
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButton
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonSize
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonVariant
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABDividerWithText
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABSnackbarType
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABTextField
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.showABSnackbar
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.MemoryGameTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -30,20 +66,38 @@ fun LoginScreen(
     onAction: (UiAction) -> Unit,
     navActions: LoginNavActions
 ) {
-    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     ABBaseScreen(
         modifier = Modifier.fillMaxSize(),
         isLoading = uiState.isLoading,
         uiEffect = uiEffect,
-        collectEffect = {
-            when (it) {
-                else -> {}
+        snackbarHostState = snackbarHostState,
+        collectEffect = { effect ->
+            when (effect) {
+                is UiEffect.NavigateToHome -> navActions.navigateToHome()
+                is UiEffect.NavigateToSignUp -> navActions.navigateToSignUp()
+                is UiEffect.NavigateToForgotPassword -> navActions.navigateToForgotPassword()
+                is UiEffect.ShowError -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showABSnackbar(
+                            message = effect.message,
+                            type = ABSnackbarType.ERROR
+                        )
+                    }
+                }
+                is UiEffect.ShowSuccess -> {
+                    coroutineScope.launch {
+                        snackbarHostState.showABSnackbar(
+                            message = effect.message,
+                            type = ABSnackbarType.SUCCESS
+                        )
+                    }
+                }
             }
         },
-        topBar = {
-
-        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LoginContent(
             modifier = Modifier
@@ -62,13 +116,215 @@ fun LoginContent(
     onAction: (UiAction) -> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "Memory Game",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.padding(bottom = 40.dp)
+            )
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Welcome to",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                        Text(
+                            text = "Memory Game login now!",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
+
+                    LoginForm(
+                        uiState = uiState,
+                        onAction = onAction
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = false,
+                                onCheckedChange = { },
+                                colors = CheckboxDefaults.colors(
+                                    uncheckedColor = MaterialTheme.colorScheme.outline
+                                )
+                            )
+                            Text(
+                                text = "Remember me",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            )
+                        }
+
+                        Text(
+                            text = "Forgot password?",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier.clickable {
+                                onAction(UiAction.OnForgotPasswordClicked)
+                            }
+                        )
+                    }
+
+                    ABButton(
+                        text = "Login",
+                        onClick = { onAction(UiAction.OnLoginClicked) },
+                        modifier = Modifier.fillMaxWidth(),
+                        variant = ABButtonVariant.PRIMARY,
+                        size = ABButtonSize.LARGE,
+                        enabled = uiState.isFormValid && !uiState.isLoading,
+                        loading = uiState.isLoading,
+                        fullWidth = true
+                    )
+
+                    Text(
+                        text = "Or Sign in with",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    SocialButton(
+                        onClick = { },
+                        backgroundColor = Color(0xFF1877F2),
+                        iconRes = R.drawable.ic_launcher_foreground
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+private fun LoginForm(
+    uiState: UiState,
+    onAction: (UiAction) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Login Content",
-            fontSize = 24.sp,
-            color = FMTheme.colors.onBackground
+            text = "Email",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        ABTextField(
+            value = uiState.email,
+            onValueChange = { onAction(UiAction.OnEmailChanged(it)) },
+            placeholder = "joedoe75@gmail.com",
+            leadingIcon = Icons.Default.Email,
+            isError = uiState.emailError != null,
+            errorMessage = uiState.emailError,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Text(
+            text = "Password",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            modifier = Modifier.padding(bottom = 4.dp, top = 8.dp)
+        )
+
+        ABTextField(
+            value = uiState.password,
+            onValueChange = { onAction(UiAction.OnPasswordChanged(it)) },
+            placeholder = "••••••••",
+            leadingIcon = Icons.Default.Lock,
+            visualTransformation = if (uiState.isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            isError = uiState.passwordError != null,
+            errorMessage = uiState.passwordError,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun SocialButton(
+    onClick: () -> Unit,
+    backgroundColor: Color,
+    iconRes: Int
+) {
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(backgroundColor)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            colorFilter = if (backgroundColor == Color.White) {
+                null
+            } else {
+                ColorFilter.tint(Color.White)
+            }
         )
     }
 }
@@ -78,7 +334,7 @@ fun LoginContent(
 fun LoginScreenPreview(
     @PreviewParameter(LoginScreenPreviewProvider::class) uiState: UiState,
 ) {
-    FMTheme {
+    MemoryGameTheme {
         LoginScreen(
             uiState = uiState,
             uiEffect = emptyFlow(),
@@ -86,23 +342,4 @@ fun LoginScreenPreview(
             navActions = LoginNavActions.default
         )
     }
-}
-
-
-class LoginScreenPreviewProvider : PreviewParameterProvider<LoginContract.UiState> {
-    override val values: Sequence<LoginContract.UiState>
-        get() = sequenceOf(
-            LoginContract.UiState(
-                isLoading = true,
-                list = emptyList(),
-            ),
-            LoginContract.UiState(
-                isLoading = false,
-                list = emptyList(),
-            ),
-            LoginContract.UiState(
-                isLoading = false,
-                list = listOf("Item 1", "Item 2", "Item 3")
-            ),
-        )
 }
