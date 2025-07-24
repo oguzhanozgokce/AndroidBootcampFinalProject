@@ -9,9 +9,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -91,7 +93,6 @@ fun ABTextField(
                         MaterialTheme.colorScheme.onSurface
                     }
                 ),
-                modifier = Modifier.padding(bottom = 4.dp)
             )
         }
 
@@ -105,7 +106,7 @@ fun ABTextField(
                     color = borderColor,
                     shape = RoundedCornerShape(12.dp)
                 )
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             BasicTextField(
                 value = value,
@@ -144,10 +145,11 @@ fun ABTextField(
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 },
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(end = 12.dp)
+                                    .size(24.dp)
                             )
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         Box(
                             modifier = Modifier.weight(1f)
@@ -171,8 +173,8 @@ fun ABTextField(
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
-                                        .size(20.dp)
-                                        .padding(start = 12.dp)
+                                        .size(24.dp)
+                                        .padding(start = 16.dp)
                                         .clickable(onClick = onTrailingIconClick)
                                 )
                             } else {
@@ -181,8 +183,8 @@ fun ABTextField(
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier
-                                        .size(20.dp)
-                                        .padding(start = 12.dp)
+                                        .size(24.dp)
+                                        .padding(start = 16.dp)
                                 )
                             }
                         }
