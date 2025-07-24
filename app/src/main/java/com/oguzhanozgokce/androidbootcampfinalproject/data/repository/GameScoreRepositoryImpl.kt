@@ -2,7 +2,7 @@ package com.oguzhanozgokce.androidbootcampfinalproject.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.oguzhanozgokce.androidbootcampfinalproject.common.Resource
+import com.oguzhanozgokce.androidbootcampfinalproject.common.exception.ErrorHandler
 import com.oguzhanozgokce.androidbootcampfinalproject.common.safeCall
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDomain
 import com.oguzhanozgokce.androidbootcampfinalproject.data.mapper.toDomainList
@@ -24,7 +24,7 @@ class GameScoreRepositoryImpl @Inject constructor(
         private const val COLLECTION_SCORES = "game_scores"
     }
 
-    override suspend fun saveScore(gameScore: GameScore): Resource<String> = safeCall {
+    override suspend fun saveScore(gameScore: GameScore): Result<String> = safeCall {
         val scoreDto = gameScore.toDto()
         val docRef = if (scoreDto.id.isNullOrEmpty()) {
             firestore.collection(COLLECTION_SCORES).document()
@@ -37,12 +37,11 @@ class GameScoreRepositoryImpl @Inject constructor(
         docRef.id
     }
 
-    override suspend fun getAllScores(): Resource<List<GameScore>> = safeCall {
-        val currentUser = firestore.collection("users").get().await() // Bu geçici, gerçekte auth'dan alınacak
+    override suspend fun getAllScores(): Result<List<GameScore>> = safeCall {
         throw Exception("getCurrentUserId() method needed - implement with AuthRepository")
     }
 
-    override suspend fun getAllScoresByUserId(userId: String): Resource<List<GameScore>> = safeCall {
+    override suspend fun getAllScoresByUserId(userId: String): Result<List<GameScore>> = safeCall {
         val snapshot = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
             .orderBy("score", Query.Direction.DESCENDING)
@@ -55,11 +54,11 @@ class GameScoreRepositoryImpl @Inject constructor(
         }.toDomainList()
     }
 
-    override suspend fun getTopScores(limit: Int): Resource<List<GameScore>> = safeCall {
+    override suspend fun getTopScores(limit: Int): Result<List<GameScore>> = safeCall {
         throw Exception("getTopScoresByUserId() method should be used instead")
     }
 
-    override suspend fun getTopScoresByUserId(userId: String, limit: Int): Resource<List<GameScore>> = safeCall {
+    override suspend fun getTopScoresByUserId(userId: String, limit: Int): Result<List<GameScore>> = safeCall {
         val snapshot = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
             .orderBy("score", Query.Direction.DESCENDING)
@@ -73,18 +72,18 @@ class GameScoreRepositoryImpl @Inject constructor(
         }.toDomainList()
     }
 
-    override suspend fun deleteScore(scoreId: String): Resource<Unit> = safeCall {
+    override suspend fun deleteScore(scoreId: String): Result<Unit> = safeCall {
         firestore.collection(COLLECTION_SCORES)
             .document(scoreId)
             .delete()
             .await()
     }
 
-    override suspend fun clearAllScores(): Resource<Unit> = safeCall {
+    override suspend fun clearAllScores(): Result<Unit> = safeCall {
         throw Exception("clearAllScoresByUserId() method should be used instead")
     }
 
-    override suspend fun clearAllScoresByUserId(userId: String): Resource<Unit> = safeCall {
+    override suspend fun clearAllScoresByUserId(userId: String): Result<Unit> = safeCall {
         val snapshot = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
             .get()
@@ -97,18 +96,19 @@ class GameScoreRepositoryImpl @Inject constructor(
         batch.commit().await()
     }
 
-    override fun getScoresFlow(): Flow<Resource<List<GameScore>>> = callbackFlow {
+    override fun getScoresFlow(): Flow<Result<List<GameScore>>> = callbackFlow {
         throw Exception("getScoresFlowByUserId() method should be used instead")
     }
 
-    override fun getScoresFlowByUserId(userId: String): Flow<Resource<List<GameScore>>> = callbackFlow {
+    override fun getScoresFlowByUserId(userId: String): Flow<Result<List<GameScore>>> = callbackFlow {
         val listener = firestore.collection(COLLECTION_SCORES)
             .whereEqualTo("userId", userId)
             .orderBy("score", Query.Direction.DESCENDING)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    trySend(Resource.Error(error.message ?: "Unknown error"))
+                    val errorMessage = ErrorHandler.handleException(error)
+                    trySend(Result.failure(Exception(errorMessage)))
                     return@addSnapshotListener
                 }
 
@@ -116,7 +116,7 @@ class GameScoreRepositoryImpl @Inject constructor(
                     val scores = snapshot.documents.mapNotNull { doc ->
                         doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
                     }.toDomainList()
-                    trySend(Resource.Success(scores))
+                    trySend(Result.success(scores))
                 }
             }
 
