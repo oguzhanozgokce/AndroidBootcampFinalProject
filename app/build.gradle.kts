@@ -91,6 +91,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // DataStore
+    implementation(libs.datastore.preferences)
+
     // Detekt
     detektPlugins(libs.detekt.formatting)
 

@@ -21,6 +21,8 @@ fun GameScoreDto.toDomain(): GameScore {
         playerName = playerName.orEmpty(),
         score = score.orZero(),
         difficulty = when (difficulty.orEmpty()) {
+            "EASY" -> GameDifficulty.EASY
+            "MEDIUM" -> GameDifficulty.MEDIUM
             "HARD" -> GameDifficulty.HARD
             else -> GameDifficulty.EASY
         },
@@ -79,8 +81,8 @@ fun GameCardDto.toDomain(): GameCard {
     return GameCard(
         id = id.orEmpty(),
         number = number.orZero(),
-        isFlipped = isFlipped.orFalse(),
-        isMatched = isMatched.orFalse(),
+        isFlipped = flipped.orFalse(),
+        isMatched = matched.orFalse(),
         position = position.orZero()
     )
 }
@@ -89,8 +91,8 @@ fun GameCard.toDto(): GameCardDto {
     return GameCardDto(
         id = id,
         number = number,
-        isFlipped = isFlipped,
-        isMatched = isMatched,
+        flipped = isFlipped,
+        matched = isMatched,
         position = position
     )
 }
@@ -151,6 +153,7 @@ fun calculateScore(
     val timeBonus = ((totalTime - timeUsed) * 2).coerceAtLeast(0)
     val difficultyMultiplier = when (difficulty) {
         GameDifficulty.EASY -> 1.0
+        GameDifficulty.MEDIUM -> 1.2
         GameDifficulty.HARD -> 1.5
     }
 

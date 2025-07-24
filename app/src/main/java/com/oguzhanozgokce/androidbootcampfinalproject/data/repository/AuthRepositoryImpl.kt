@@ -90,7 +90,6 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUser(): Result<User?> = safeCall {
         val firebaseUser = firebaseAuth.currentUser
         if (firebaseUser != null) {
-            // Try to get user from Firestore first
             val userDoc = firestore.collection(COLLECTION_USERS)
                 .document(firebaseUser.uid)
                 .get()
@@ -99,7 +98,6 @@ class AuthRepositoryImpl @Inject constructor(
             if (userDoc.exists()) {
                 userDoc.toObject(UserDto::class.java)?.toDomain()
             } else {
-                // Create user data from Firebase Auth
                 val user = User(
                     uid = firebaseUser.uid,
                     displayName = firebaseUser.displayName ?: "User",
@@ -107,13 +105,10 @@ class AuthRepositoryImpl @Inject constructor(
                     createdAt = System.currentTimeMillis(),
                     lastActiveAt = System.currentTimeMillis()
                 )
-
-                // Save to Firestore
                 firestore.collection(COLLECTION_USERS)
                     .document(user.uid)
                     .set(user.toDto())
                     .await()
-
                 user
             }
         } else {
@@ -166,8 +161,10 @@ class AuthRepositoryImpl @Inject constructor(
         firestore.collection(COLLECTION_USERS)
             .document(currentUser.uid)
             .update(
-                "displayName", displayName,
-                "lastActiveAt", System.currentTimeMillis()
+                "displayName",
+                displayName,
+                "lastActiveAt",
+                System.currentTimeMillis()
             )
             .await()
     }
