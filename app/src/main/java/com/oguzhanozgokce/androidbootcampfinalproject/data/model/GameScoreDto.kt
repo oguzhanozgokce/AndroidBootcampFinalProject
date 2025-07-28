@@ -9,8 +9,5 @@ data class GameScoreDto(
     val gameTime: Long? = null,
     val completedTime: Long? = null,
     val timestamp: Long = System.currentTimeMillis(),
-    val isCompleted: Boolean? = null
-) {
-    // Firebase Firestore requires a no-argument constructor
-    constructor() : this(null, null, null, null, null, null, null, System.currentTimeMillis(), null)
-}
+    val completed: Boolean? = null
+)

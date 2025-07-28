@@ -235,16 +235,20 @@ class GameViewModel @Inject constructor(
         val userId = userResult.getOrNull()?.uid ?: "anonymous_user"
         val playerName = userResult.getOrNull()?.displayName ?: "Player"
 
+        val initialGameTime = when (difficulty) {
+            else -> 60000L
+        }
+
         val gameScore = GameScore(
             id = "",
             userId = userId,
             playerName = playerName,
             score = currentState.score,
             difficulty = currentState.difficulty,
-            gameTime = 60000L,
-            completedTime = completedTime,
+            gameTime = initialGameTime, // Başlangıç oyun süresi
+            completedTime = completedTime, // Gerçek tamamlama süresi
             timestamp = System.currentTimeMillis(),
-            isCompleted = currentState.isGameCompleted
+            completed = currentState.isGameCompleted
         )
 
         val result = saveGameScoreUseCase(gameScore)

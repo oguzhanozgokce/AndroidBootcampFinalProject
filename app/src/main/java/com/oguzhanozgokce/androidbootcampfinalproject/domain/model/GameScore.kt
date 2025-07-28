@@ -9,5 +9,5 @@ data class GameScore(
     val gameTime: Long,
     val completedTime: Long,
     val timestamp: Long,
-    val isCompleted: Boolean
+    val completed: Boolean
 )
