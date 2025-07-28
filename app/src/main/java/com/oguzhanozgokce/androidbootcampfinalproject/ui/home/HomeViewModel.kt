@@ -37,7 +37,7 @@ class HomeViewModel @Inject constructor(
                 is UiAction.NavigateToGameSetup -> emitUiEffect(UiEffect.NavigateToGameSetup)
                 is UiAction.NavigateToScores -> emitUiEffect(UiEffect.NavigateToScores)
                 is UiAction.NavigateToSettings -> emitUiEffect(UiEffect.NavigateToSettings)
-                is UiAction.NavigateToScoreboard -> emitUiEffect(UiEffect.NavigateToScoreboard)
+                is UiAction.NavigateToScoreboard -> emitUiEffect(UiEffect.NavigateToGameScore)
                 is UiAction.NavigateToPage -> {
                     /* Handle navigation to specific page */
                 }
@@ -90,27 +90,29 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadGameStats(user: User) {
-        val statsResult = getGameStatsUseCase()
+        getGameStatsUseCase().fold(
+            onSuccess = { gameScores ->
+                val gamesPlayed = gameScores.size
+                val bestScore = gameScores.maxOfOrNull { it.score } ?: 0
+                val completedGames = gameScores.count { it.completed }
+                val totalScore = gameScores.sumOf { it.score }
+                val winRate = if (gamesPlayed > 0) (completedGames * 100) / gamesPlayed else 0
+                val averageScore = if (gamesPlayed > 0) totalScore / gamesPlayed else 0
 
-        Log.d("HomeViewModel", "Loading game stats for user: ${user.displayName}")
-
-        statsResult.fold(
-            onSuccess = { gameStats ->
-                val averageScore = if (gameStats.gamesPlayed > 0) {
-                    gameStats.totalScore / gameStats.gamesPlayed
-                } else {
-                    0
-                }
+                Log.d(
+                    "HomeViewModel",
+                    "Stats calculated - Total Games: $gamesPlayed, Completed: $completedGames, Win Rate: $winRate%"
+                )
 
                 updateUiState {
                     copy(
                         isLoading = false,
                         user = user,
-                        gamesPlayed = gameStats.gamesPlayed,
-                        bestScore = gameStats.bestScore,
-                        winRate = gameStats.winRate,
-                        totalScore = gameStats.totalScore,
-                        completedGames = gameStats.completedGames,
+                        gamesPlayed = gamesPlayed,
+                        bestScore = bestScore,
+                        winRate = winRate,
+                        totalScore = totalScore,
+                        completedGames = completedGames,
                         averageScore = averageScore
                     )
                 }
@@ -122,7 +124,10 @@ class HomeViewModel @Inject constructor(
                         user = user,
                         gamesPlayed = 0,
                         bestScore = 0,
-                        winRate = 0
+                        winRate = 0,
+                        totalScore = 0,
+                        completedGames = 0,
+                        averageScore = 0
                     )
                 }
                 Log.e("HomeViewModel", "Error loading game stats: ${statsError.message}")

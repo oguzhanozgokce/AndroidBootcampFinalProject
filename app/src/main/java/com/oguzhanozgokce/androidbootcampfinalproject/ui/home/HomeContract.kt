@@ -31,5 +31,6 @@ object HomeContract {
         data object NavigateToScores : UiEffect
         data object NavigateToSettings : UiEffect
         data object NavigateToScoreboard : UiEffect
+        data object NavigateToGameScore : UiEffect
     }
 }

@@ -12,8 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -66,7 +65,8 @@ fun HomeScreen(
     onAction: (UiAction) -> Unit,
     onNavigateToGameSetup: () -> Unit = {},
     onNavigateToScores: () -> Unit = {},
-    onNavigateToSettings: () -> Unit = {}
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToGameScoreboard: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -82,6 +82,7 @@ fun HomeScreen(
                 is UiEffect.NavigateToScores -> onNavigateToScores()
                 is UiEffect.NavigateToSettings -> onNavigateToSettings()
                 is UiEffect.NavigateToScoreboard -> onNavigateToScores()
+                is UiEffect.NavigateToGameScore -> onNavigateToGameScoreboard()
                 is UiEffect.ShowError -> {
                     coroutineScope.launch {
                         snackbarHostState.showABSnackbar(
@@ -122,23 +123,31 @@ fun HomeContent(
                 )
             )
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Welcome Section
-            WelcomeSection(uiState = uiState)
+            item {
+                WelcomeSection(uiState = uiState)
+            }
 
             // Stats Cards
-            QuickStatsSection(uiState = uiState)
+            item {
+                QuickStatsSection(uiState = uiState)
+            }
 
             // Main Action Buttons
-            MainActionsSection(onAction = onAction)
+            item {
+                MainActionsSection(onAction = onAction)
+            }
 
             // Recent Activity or Tips
-            RecentActivitySection()
+            item {
+                RecentActivitySection()
+            }
         }
     }
 }
@@ -156,7 +165,7 @@ private fun WelcomeSection(uiState: UiState) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Profile Avatar
@@ -216,59 +225,84 @@ private fun WelcomeSection(uiState: UiState) {
 
 @Composable
 private fun QuickStatsSection(uiState: UiState) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    val stats = listOf(
+        StatItem(
+            "Games Played",
+            uiState.gamesPlayed.toString(),
+            Icons.Default.PlayArrow,
+            StatGamesPlayed
+        ),
+        StatItem(
+            "Best Score",
+            uiState.bestScore.toString(),
+            Icons.Default.Star,
+            StatBestScore
+        ),
+        StatItem(
+            "Win Rate",
+            "${uiState.winRate}%",
+            Icons.Default.Build,
+            StatWinRate
+        ),
+        StatItem(
+            "Completed",
+            uiState.completedGames.toString(),
+            Icons.Default.PlayArrow,
+            StatGamesPlayed
+        ),
+        StatItem(
+            "Avg Score",
+            uiState.averageScore.toString(),
+            Icons.Default.Star,
+            StatBestScore
+        ),
+        StatItem(
+            "Total Score",
+            uiState.totalScore.toString(),
+            Icons.Default.Build,
+            StatWinRate
+        )
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(
-            listOf(
-                StatItem(
-                    "Games Played",
-                    uiState.gamesPlayed.toString(),
-                    Icons.Default.PlayArrow,
-                    StatGamesPlayed
-                ),
-                StatItem(
-                    "Best Score",
-                    uiState.bestScore.toString(),
-                    Icons.Default.Star,
-                    StatBestScore
-                ),
-                StatItem(
-                    "Win Rate",
-                    "${uiState.winRate}%",
-                    Icons.Default.Build,
-                    StatWinRate
-                ),
-                StatItem(
-                    "Completed",
-                    uiState.completedGames.toString(),
-                    Icons.Default.PlayArrow,
-                    StatGamesPlayed
-                ),
-                StatItem(
-                    "Avg Score",
-                    uiState.averageScore.toString(),
-                    Icons.Default.Star,
-                    StatBestScore
-                ),
-                StatItem(
-                    "Total Score",
-                    uiState.totalScore.toString(),
-                    Icons.Default.Build,
-                    StatWinRate
+        // İlk sıra - ilk 3 item
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            stats.take(3).forEach { stat ->
+                StatCard(
+                    stat = stat,
+                    modifier = Modifier.weight(1f)
                 )
-            )
-        ) { stat ->
-            StatCard(stat = stat)
+            }
+        }
+
+        // İkinci sıra - son 3 item
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            stats.drop(3).forEach { stat ->
+                StatCard(
+                    stat = stat,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun StatCard(stat: StatItem) {
+private fun StatCard(
+    stat: StatItem,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.width(120.dp),
-        shape = RoundedCornerShape(16.dp),
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -277,13 +311,13 @@ private fun StatCard(stat: StatItem) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
                     .background(stat.color.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
@@ -292,13 +326,13 @@ private fun StatCard(stat: StatItem) {
                     imageVector = stat.icon,
                     contentDescription = null,
                     tint = stat.color,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
 
             Text(
                 text = stat.value,
-                style = MaterialTheme.typography.titleMedium.copy(
+                style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -306,10 +340,11 @@ private fun StatCard(stat: StatItem) {
 
             Text(
                 text = stat.label,
-                style = MaterialTheme.typography.bodySmall.copy(
+                style = MaterialTheme.typography.labelSmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 2
             )
         }
     }
@@ -320,7 +355,7 @@ private fun MainActionsSection(
     onAction: (UiAction) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
             text = "Quick Actions",
@@ -346,7 +381,7 @@ private fun MainActionsSection(
         ) {
             ABButton(
                 text = "My Scores",
-                onClick = { onAction(UiAction.NavigateToScores) },
+                onClick = { onAction(UiAction.NavigateToScoreboard) },
                 modifier = Modifier
                     .weight(1f),
                 variant = ABButtonVariant.SECONDARY,
@@ -378,8 +413,8 @@ private fun RecentActivitySection() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
