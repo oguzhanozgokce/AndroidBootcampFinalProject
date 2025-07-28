@@ -1,4 +1,3 @@
-
 package com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register
 
 object RegisterContract {

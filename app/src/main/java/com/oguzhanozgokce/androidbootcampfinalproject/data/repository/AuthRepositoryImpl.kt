@@ -121,7 +121,7 @@ class AuthRepositoryImpl @Inject constructor(
             val firebaseUser = auth.currentUser
             if (firebaseUser != null) {
                 // Listen to user document changes
-                val userDocListener = firestore.collection(COLLECTION_USERS)
+                firestore.collection(COLLECTION_USERS)
                     .document(firebaseUser.uid)
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) {

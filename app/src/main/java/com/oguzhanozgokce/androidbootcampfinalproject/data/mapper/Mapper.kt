@@ -29,7 +29,7 @@ fun GameScoreDto.toDomain(): GameScore {
         gameTime = gameTime.orZero(),
         completedTime = completedTime.orZero(),
         timestamp = timestamp,
-        isCompleted = isCompleted.orFalse()
+        completed = completed.orFalse()
     )
 }
 
@@ -43,7 +43,7 @@ fun GameScore.toDto(): GameScoreDto {
         gameTime = gameTime,
         completedTime = completedTime,
         timestamp = timestamp,
-        isCompleted = isCompleted
+        completed = completed
     )
 }
 

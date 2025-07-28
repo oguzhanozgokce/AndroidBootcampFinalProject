@@ -8,18 +8,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Game
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.GameSetup
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Home
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Score
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Settings
-import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.Splash
+import com.oguzhanozgokce.androidbootcampfinalproject.navigation.Screen.*
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.LoginNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.login.login
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.RegisterNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.auth.register.register
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.game.GameScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.game.GameViewModel
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamescore.GameScoreNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamescore.gameScore
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupViewModel
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeScreen
@@ -52,23 +49,23 @@ fun NavigationGraph(
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
                 navActions = SplashNavActions(
-                    navigateToLogin = { navController.navigate(Screen.Login) },
-                    navigateToHome = { navController.navigate(Screen.Home) }
+                    navigateToLogin = { navController.navigate(Login) },
+                    navigateToHome = { navController.navigate(Home) }
                 )
             )
         }
         login(
             actions = LoginNavActions(
-                navigateToHome = { navController.navigate(Screen.Home) },
+                navigateToHome = { navController.navigate(Home) },
                 navigateToBack = { navController.popBackStack() },
-                navigateToSignUp = { navController.navigate(Screen.Register) },
-                navigateToForgotPassword = { navController.navigate(Screen.ForgotPassword) }
+                navigateToSignUp = { navController.navigate(Register) },
+                navigateToForgotPassword = { navController.navigate(ForgotPassword) }
             )
         )
         register(
             actions = RegisterNavActions(
                 navigateToBack = { navController.popBackStack() },
-                navigateToLogin = { navController.navigate(Screen.Login) }
+                navigateToLogin = { navController.navigate(Login) }
             )
         )
         composable<Home> {
@@ -79,7 +76,8 @@ fun NavigationGraph(
                 uiState = uiState,
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
-                onNavigateToGameSetup = { navController.navigate(Screen.GameSetup) },
+                onNavigateToGameSetup = { navController.navigate(GameSetup) },
+                onNavigateToGameScoreboard = { navController.navigate(GameScore) },
             )
         }
         composable<GameSetup> {
@@ -92,7 +90,8 @@ fun NavigationGraph(
                 onAction = viewModel::onAction,
                 onNavigateToGame = { difficulty ->
                     navController.navigate(Game(difficulty))
-                }
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
         composable<Game> {
@@ -125,5 +124,10 @@ fun NavigationGraph(
                 onAction = viewModel::onAction
             )
         }
+        gameScore(
+            actions = GameScoreNavActions(
+                navigateToBack = { navController.popBackStack() }
+            )
+        )
     }
 }
