@@ -1,21 +1,29 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.ui.settings
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import com.oguzhanozgokce.androidbootcampfinalproject.domain.model.GameSettings
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsContract.UiState
 
-class SettingsScreenPreviewProvider : PreviewParameterProvider<SettingsContract.UiState> {
-    override val values: Sequence<SettingsContract.UiState>
+class SettingsScreenPreviewProvider : PreviewParameterProvider<UiState> {
+    override val values: Sequence<UiState>
         get() = sequenceOf(
-            SettingsContract.UiState(
+            UiState(
+                isLoading = false,
+                gameSettings = GameSettings(
+                    userId = "test-user",
+                    isDarkTheme = true,
+                    isTimerEnabled = true,
+                    gameTimeLimit = 60,
+                    lastPlayerName = "Test Player"
+                ),
+                showClearScoresDialog = false,
+                currentTheme = true
+            ),
+            UiState(
                 isLoading = true,
-                list = emptyList(),
-            ),
-            SettingsContract.UiState(
-                isLoading = false,
-                list = emptyList(),
-            ),
-            SettingsContract.UiState(
-                isLoading = false,
-                list = listOf("Item 1", "Item 2", "Item 3")
-            ),
+                gameSettings = null,
+                showClearScoresDialog = false,
+                currentTheme = null
+            )
         )
 }
