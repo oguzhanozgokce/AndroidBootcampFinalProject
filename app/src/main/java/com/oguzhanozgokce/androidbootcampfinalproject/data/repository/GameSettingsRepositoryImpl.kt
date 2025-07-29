@@ -106,6 +106,17 @@ class GameSettingsRepositoryImpl @Inject constructor(
             .await()
     }
 
+    override suspend fun updateDarkTheme(isDarkTheme: Boolean): Result<Unit> = safeCall {
+        throw Exception("updateDarkThemeByUserId() method should be used instead")
+    }
+
+    override suspend fun updateDarkThemeByUserId(userId: String, isDarkTheme: Boolean): Result<Unit> = safeCall {
+        firestore.collection(COLLECTION_SETTINGS)
+            .document(userId)
+            .update("isDarkTheme", isDarkTheme)
+            .await()
+    }
+
     private fun getDefaultSettings(userId: String): GameSettings {
         return GameSettings(
             userId = userId,

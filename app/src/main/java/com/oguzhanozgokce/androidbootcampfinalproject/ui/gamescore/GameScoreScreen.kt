@@ -170,10 +170,10 @@ fun GameScoreContent(
                 AnimatedVisibility(
                     visible = isVisible,
                     enter = fadeIn(animationSpec = tween(400, delayMillis = 300 + index * 100)) +
-                            slideInVertically(
-                                initialOffsetY = { it },
-                                animationSpec = tween(400, delayMillis = 300 + index * 100)
-                            )
+                        slideInVertically(
+                            initialOffsetY = { it },
+                            animationSpec = tween(400, delayMillis = 300 + index * 100)
+                        )
                 ) {
                     CompactScoreItem(score = score, rank = index + 1)
                 }
@@ -199,7 +199,9 @@ fun StatisticsOverview(gameScores: List<GameScore>) {
     val winRate = if (totalGames > 0) (completedGames * 100) / totalGames else 0
     val avgTime = if (gameScores.isNotEmpty()) {
         gameScores.filter { it.completed }.map { it.completedTime }.average().toInt()
-    } else 0
+    } else {
+        0
+    }
 
     Column {
         Text(
@@ -299,8 +301,12 @@ fun CompactStatCard(
 
             Column {
                 Text(
-                    text = if (value.contains("%")) "${animatedProgress.toInt()}%" else animatedProgress.toInt()
-                        .toString(),
+                    text = if (value.contains("%")) {
+                        "${animatedProgress.toInt()}%"
+                    } else {
+                        animatedProgress.toInt()
+                            .toString()
+                    },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface

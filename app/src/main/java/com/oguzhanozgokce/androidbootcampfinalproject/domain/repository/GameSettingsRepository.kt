@@ -9,6 +9,8 @@ interface GameSettingsRepository {
     suspend fun getSettingsByUserId(userId: String): Result<GameSettings>
     fun getSettingsFlow(): Flow<Result<GameSettings>>
     fun getSettingsFlowByUserId(userId: String): Flow<Result<GameSettings>>
+    suspend fun updateDarkTheme(isDarkTheme: Boolean): Result<Unit>
+    suspend fun updateDarkThemeByUserId(userId: String, isDarkTheme: Boolean): Result<Unit>
     suspend fun updateTimerEnabled(isEnabled: Boolean): Result<Unit>
     suspend fun updateTimerEnabledByUserId(userId: String, isEnabled: Boolean): Result<Unit>
     suspend fun updateGameTimeLimit(timeLimit: Int): Result<Unit>

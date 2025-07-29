@@ -128,7 +128,6 @@ class GameScoreRepositoryImpl @Inject constructor(
      * Oyun için rastgele sayıları Firebase'den çekmek için
      */
     override suspend fun getRandomNumbers(count: Int): Result<List<Int>> = safeCall {
-
         val snapshot = firestore.collection("game_numbers")
             .limit(100)
             .get()
