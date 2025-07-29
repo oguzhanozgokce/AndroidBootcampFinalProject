@@ -38,6 +38,9 @@ class UserDataStore @Inject constructor(
         private val IS_LOGGED_IN_KEY = stringPreferencesKey("is_logged_in")
         private val REMEMBER_ME_KEY = stringPreferencesKey("remember_me")
         private val LAST_LOGIN_TIME_KEY = longPreferencesKey("last_login_time")
+
+        // Theme Keys
+        private val IS_DARK_THEME_KEY = stringPreferencesKey("is_dark_theme")
     }
 
     /**
@@ -170,6 +173,24 @@ class UserDataStore @Inject constructor(
     suspend fun setRememberMe(remember: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[REMEMBER_ME_KEY] = remember.toString()
+        }
+    }
+
+    /**
+     * Set dark theme preference
+     */
+    suspend fun setDarkTheme(isDark: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_DARK_THEME_KEY] = isDark.toString()
+        }
+    }
+
+    /**
+     * Get dark theme preference
+     */
+    fun isDarkTheme(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[IS_DARK_THEME_KEY]?.toBoolean() ?: false
         }
     }
 

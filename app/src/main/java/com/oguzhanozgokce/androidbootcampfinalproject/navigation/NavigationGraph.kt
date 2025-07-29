@@ -78,6 +78,7 @@ fun NavigationGraph(
                 onAction = viewModel::onAction,
                 onNavigateToGameSetup = { navController.navigate(GameSetup) },
                 onNavigateToGameScoreboard = { navController.navigate(GameScore) },
+                onNavigateToSettings = { navController.navigate(Settings) },
             )
         }
         composable<GameSetup> {
@@ -121,7 +122,8 @@ fun NavigationGraph(
             SettingsScreen(
                 uiState = uiState,
                 uiEffect = uiEffect,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onNavigationBack = { navController.popBackStack() }
             )
         }
         gameScore(

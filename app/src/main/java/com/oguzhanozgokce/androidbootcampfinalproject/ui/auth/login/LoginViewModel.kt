@@ -113,9 +113,9 @@ class LoginViewModel @Inject constructor(
     private fun validateForm() {
         val currentState = uiState.value
         val isValid = currentState.emailError == null &&
-                currentState.passwordError == null &&
-                currentState.email.isNotBlank() &&
-                currentState.password.isNotBlank()
+            currentState.passwordError == null &&
+            currentState.email.isNotBlank() &&
+            currentState.password.isNotBlank()
 
         updateUiState { copy(isFormValid = isValid) }
     }
