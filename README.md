@@ -61,37 +61,88 @@ deneyimi sunar.
 
 ## 📸 Ekran Görüntüleri
 
-### 🏠 Ana Ekran
+### 🏠 Ana Ekran & 🎮 Oyun Kurulumu
 
-<img src="screenshot/home.png" width="300" alt="Ana Ekran"/>
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshot/home.png" width="250" alt="Ana Ekran"/>
+      <br>
+      <strong>Ana Ekran</strong>
+      <br>
+      Kullanıcı istatistikleri ve navigasyon
+    </td>
+    <td align="center">
+      <img src="screenshot/create_game.png" width="250" alt="Oyun Kurulumu"/>
+      <br>
+      <strong>Oyun Kurulumu</strong>
+      <br>
+      Zorluk seviyesi ve ayarlar
+    </td>
+  </tr>
+</table>
 
-Ana ekranda kullanıcı istatistikleri, hızlı oyun başlatma ve navigasyon menüsü bulunur.
+### 🃏 Oyun Deneyimi
 
-### 🎮 Oyun Kurulumu
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshot/easy_game.png" width="250" alt="Kolay Seviye"/>
+      <br>
+      <strong>Kolay Seviye (4x3)</strong>
+      <br>
+      Yeni başlayanlar için ideal
+    </td>
+    <td align="center">
+      <img src="screenshot/mid_gmae.png" width="250" alt="Orta Seviye"/>
+      <br>
+      <strong>Orta Seviye (4x4)</strong>
+      <br>
+      Dengeli zorluk seviyesi
+    </td>
+  </tr>
+</table>
 
-<img src="screenshot/create_game.png" width="300" alt="Oyun Kurulumu"/>
+### 🎯 Skor Takibi
 
-Zorluk seviyesi seçimi ve oyun ayarları bu ekranda yapılır.
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshot/my_score.png" width="250" alt="Kişisel Skorlar"/>
+      <br>
+      <strong>Kişisel Skorlar</strong>
+      <br>
+      Kendi performansınızı takip edin
+    </td>
+    <td align="center">
+      <img src="screenshot/top_score.png" width="250" alt="En Yüksek Skorlar"/>
+      <br>
+      <strong>Global Liderlik</strong>
+      <br>
+      Tüm oyuncular arasında sıralama
+    </td>
+  </tr>
+</table>
 
-### 🃏 Oyun Ekranı
+### ⚙️ Kişiselleştirme
 
-<img src="screenshot/easy_game.png" width="300" alt="Kolay Seviye"/>
-<img src="screenshot/mid_gmae.png" width="300" alt="Orta Seviye"/>
-
-Farklı zorluk seviyelerinde oyun deneyimi.
-
-### 🎯 Skorlar
-
-<img src="screenshot/my_score.png" width="300" alt="Kişisel Skorlar"/>
-<img src="screenshot/top_score.png" width="300" alt="En Yüksek Skorlar"/>
-
-Kişisel skorlar ve global liderlik tablosu.
-
-### ⚙️ Ayarlar
-
-<img src="screenshot/settings.png" width="300" alt="Ayarlar"/>
-
-Tema değişikliği, oyun ayarları ve veri yönetimi.
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshot/settings.png" width="250" alt="Ayarlar"/>
+      <br>
+      <strong>Ayarlar</strong>
+      <br>
+      Tema, oyun ayarları ve veri yönetimi
+    </td>
+    <td align="center">
+      <br>
+      <strong>🌙 Koyu Tema Desteği</strong>
+      <br>
+      Gözlerinizi koruyun
+    </td>
+  </tr>
+</table>
 
 ## 🏃‍♂️ Kurulum ve Çalıştırma
 
