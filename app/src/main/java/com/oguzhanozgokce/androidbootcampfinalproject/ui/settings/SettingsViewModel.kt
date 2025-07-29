@@ -39,24 +39,25 @@ class SettingsViewModel @Inject constructor(
                     currentUserId = currentUser.uid
                     getGameSettingsUseCase.flow(currentUserId).collectLatest { result ->
                         result.onSuccess { settings ->
-                            this@SettingsViewModel.updateUiState {
+                            updateUiState {
                                 copy(
                                     gameSettings = settings,
                                     isLoading = false,
-                                    currentTheme = if (currentTheme == null) settings.isDarkTheme else currentTheme
+                                    currentTheme = settings.isDarkTheme,
+                                    currentTimer = settings.isTimerEnabled
                                 )
                             }
                         }.onFailure { error ->
-                            this@SettingsViewModel.updateUiState { copy(isLoading = false) }
+                            updateUiState { copy(isLoading = false) }
                             emitUiEffect(UiEffect.ShowError(error.message ?: "Ayarlar yüklenemedi"))
                         }
                     }
                 } ?: run {
-                    this@SettingsViewModel.updateUiState { copy(isLoading = false) }
+                    updateUiState { copy(isLoading = false) }
                     emitUiEffect(UiEffect.ShowError("Kullanıcı oturum açmamış"))
                 }
             }.onFailure { error ->
-                this@SettingsViewModel.updateUiState { copy(isLoading = false) }
+                updateUiState { copy(isLoading = false) }
                 emitUiEffect(UiEffect.ShowError(error.message ?: "Kullanıcı bulunamadı"))
             }
         }
@@ -67,38 +68,40 @@ class SettingsViewModel @Inject constructor(
             when (uiAction) {
                 is UiAction.ToggleTheme -> handleToggleTheme(uiAction.isDarkTheme)
                 is UiAction.ToggleTimer -> handleToggleTimer(uiAction.isTimerEnabled)
-                UiAction.ShowClearScoresDialog -> this@SettingsViewModel.updateUiState { copy(showClearScoresDialog = true) }
-                UiAction.HideClearScoresDialog -> this@SettingsViewModel.updateUiState { copy(showClearScoresDialog = false) }
+                UiAction.ShowClearScoresDialog -> updateUiState { copy(showClearScoresDialog = true) }
+                UiAction.HideClearScoresDialog -> updateUiState { copy(showClearScoresDialog = false) }
                 UiAction.ClearScores -> handleClearScores()
             }
         }
     }
 
     private suspend fun handleToggleTheme(isDarkTheme: Boolean) {
-        // Önce UI'ı anında güncelle
-        this@SettingsViewModel.updateUiState { copy(currentTheme = isDarkTheme) }
+       updateUiState { copy(currentTheme = isDarkTheme) }
 
         updateThemeUseCase(currentUserId, isDarkTheme).onSuccess {
             emitUiEffect(UiEffect.ThemeUpdated)
         }.onFailure { error ->
+            updateUiState { copy(currentTheme = !isDarkTheme) }
             emitUiEffect(UiEffect.ShowError(error.message ?: "Tema güncellenemedi"))
         }
     }
 
     private suspend fun handleToggleTimer(isTimerEnabled: Boolean) {
+        updateUiState { copy(currentTimer = isTimerEnabled) }
         updateTimerUseCase(currentUserId, isTimerEnabled).onSuccess {
             emitUiEffect(UiEffect.TimerUpdated)
         }.onFailure { error ->
+            updateUiState { copy(currentTimer = !isTimerEnabled) }
             emitUiEffect(UiEffect.ShowError(error.message ?: "Timer ayarı güncellenemedi"))
         }
     }
 
     private suspend fun handleClearScores() {
         clearScoresUseCase(currentUserId).onSuccess {
-            this@SettingsViewModel.updateUiState { copy(showClearScoresDialog = false) }
+            updateUiState { copy(showClearScoresDialog = false) }
             emitUiEffect(UiEffect.ScoresCleared)
         }.onFailure { error ->
-            this@SettingsViewModel.updateUiState { copy(showClearScoresDialog = false) }
+            updateUiState { copy(showClearScoresDialog = false) }
             emitUiEffect(UiEffect.ShowError(error.message ?: "Skorlar temizlenemedi"))
         }
     }

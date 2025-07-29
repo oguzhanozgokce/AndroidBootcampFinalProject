@@ -38,7 +38,17 @@ private val LightColorScheme = lightColorScheme(
     onError = OnError,
 
     outline = TextFieldBorder,
-    outlineVariant = TextFieldBackground
+    outlineVariant = TextFieldBackground,
+
+    // Game specific mappings
+    inverseSurface = CardMatched,
+    inverseOnSurface = OnPrimary,
+    inversePrimary = StatGamesPlayed,
+
+    // Additional surface variants
+    surfaceContainer = RankGoldBackground,
+    surfaceContainerHigh = RankSilverBackground,
+    surfaceContainerHighest = RankBronzeBackground
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -69,7 +79,17 @@ private val DarkColorScheme = darkColorScheme(
     onError = DarkOnError,
 
     outline = TextFieldBorderDark,
-    outlineVariant = TextFieldBackgroundDark
+    outlineVariant = TextFieldBackgroundDark,
+
+    // Game specific mappings
+    inverseSurface = CardMatchedDark,
+    inverseOnSurface = DarkOnPrimary,
+    inversePrimary = StatGamesPlayedDark,
+
+    // Additional surface variants
+    surfaceContainer = RankGoldBackgroundDark,
+    surfaceContainerHigh = RankSilverBackgroundDark,
+    surfaceContainerHighest = RankBronzeBackgroundDark
 )
 
 @Composable

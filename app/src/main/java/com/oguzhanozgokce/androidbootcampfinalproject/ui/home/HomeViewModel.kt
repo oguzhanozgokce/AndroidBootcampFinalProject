@@ -38,6 +38,7 @@ class HomeViewModel @Inject constructor(
                 is UiAction.NavigateToScores -> emitUiEffect(UiEffect.NavigateToScores)
                 is UiAction.NavigateToSettings -> emitUiEffect(UiEffect.NavigateToSettings)
                 is UiAction.NavigateToScoreboard -> emitUiEffect(UiEffect.NavigateToGameScore)
+                is UiAction.NavigateToTopScores -> emitUiEffect(UiEffect.NavigateToTopScores)
                 is UiAction.NavigateToPage -> {
                     /* Handle navigation to specific page */
                 }
@@ -47,26 +48,18 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun loadUserInfo() {
         updateUiState { copy(isLoading = true) }
-
-        // First try to get user from DataStore (faster)
         userDataStore.getCurrentUser().collect { cachedUser ->
             if (cachedUser != null) {
-                // Update UI with cached user immediately
                 updateUiState { copy(user = cachedUser) }
-
-                // Update last active time in DataStore
                 userDataStore.updateLastActiveTime()
-
-                // Then load fresh stats
                 loadGameStats(cachedUser)
             } else {
-                // If no cached user, fetch from server
                 loadUserFromServer()
             }
         }
     }
 
-    private suspend fun loadUserFromServer() {
+    private fun loadUserFromServer() = viewModelScope.launch {
         val userResult = getCurrentUserUseCase()
 
         userResult.fold(
@@ -89,7 +82,7 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadGameStats(user: User) {
+    private fun loadGameStats(user: User) = viewModelScope.launch {
         getGameStatsUseCase().fold(
             onSuccess = { gameScores ->
                 val gamesPlayed = gameScores.size
@@ -98,11 +91,6 @@ class HomeViewModel @Inject constructor(
                 val totalScore = gameScores.sumOf { it.score }
                 val winRate = if (gamesPlayed > 0) (completedGames * 100) / gamesPlayed else 0
                 val averageScore = if (gamesPlayed > 0) totalScore / gamesPlayed else 0
-
-                Log.d(
-                    "HomeViewModel",
-                    "Stats calculated - Total Games: $gamesPlayed, Completed: $completedGames, Win Rate: $winRate%"
-                )
 
                 updateUiState {
                     copy(
@@ -131,7 +119,6 @@ class HomeViewModel @Inject constructor(
                     )
                 }
                 Log.e("HomeViewModel", "Error loading game stats: ${statsError.message}")
-                emitUiEffect(UiEffect.ShowError("İstatistikler yüklenemedi: ${statsError.message}"))
             }
         )
     }

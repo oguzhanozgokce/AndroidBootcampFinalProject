@@ -148,7 +148,7 @@ fun SettingsContent(
             ABSwitch(
                 title = "Oyun Süresi",
                 subtitle = "Oyunlarda süre sınırı uygula (${gameSettings.gameTimeLimit} saniye)",
-                checked = gameSettings.isTimerEnabled,
+                checked = uiState.currentTimer ?: gameSettings.isTimerEnabled,
                 onCheckedChange = { onAction(UiAction.ToggleTimer(it)) }
             )
 

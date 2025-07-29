@@ -2,6 +2,7 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,8 +54,11 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeContract.UiEff
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.home.HomeContract.UiState
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.MemoryGameTheme
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatBestScore
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatBestScoreDark
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatGamesPlayed
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatGamesPlayedDark
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatWinRate
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.StatWinRateDark
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -67,6 +72,7 @@ fun HomeScreen(
     onNavigateToScores: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToGameScoreboard: () -> Unit = {},
+    onNavigateToTopScore: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -83,6 +89,7 @@ fun HomeScreen(
                 is UiEffect.NavigateToSettings -> onNavigateToSettings()
                 is UiEffect.NavigateToScoreboard -> onNavigateToScores()
                 is UiEffect.NavigateToGameScore -> onNavigateToGameScoreboard()
+                is UiEffect.NavigateToTopScores -> onNavigateToTopScore()
                 is UiEffect.ShowError -> {
                     coroutineScope.launch {
                         snackbarHostState.showABSnackbar(
@@ -97,8 +104,7 @@ fun HomeScreen(
     ) { paddingValues ->
         HomeContent(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+                .fillMaxSize(),
             uiState = uiState,
             onAction = onAction
         )
@@ -129,25 +135,11 @@ fun HomeContent(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Welcome Section
-            item {
-                WelcomeSection(uiState = uiState)
-            }
-
-            // Stats Cards
-            item {
-                QuickStatsSection(uiState = uiState)
-            }
-
-            // Main Action Buttons
-            item {
-                MainActionsSection(onAction = onAction)
-            }
-
-            // Recent Activity or Tips
-            item {
-                RecentActivitySection()
-            }
+            item { WelcomeSection(uiState = uiState) }
+            item { QuickStatsSection(uiState = uiState) }
+            item { MainActionsSection(onAction = onAction) }
+            item { RecentActivitySection() }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 }
@@ -225,52 +217,53 @@ private fun WelcomeSection(uiState: UiState) {
 
 @Composable
 private fun QuickStatsSection(uiState: UiState) {
+    val isDarkTheme = isSystemInDarkTheme()
+
     val stats = listOf(
         StatItem(
-            "Games Played",
+            "Oyunlar",
             uiState.gamesPlayed.toString(),
             Icons.Default.PlayArrow,
-            StatGamesPlayed
+            if (isDarkTheme) StatGamesPlayedDark else StatGamesPlayed
         ),
         StatItem(
-            "Best Score",
+            "En İyi Skor",
             uiState.bestScore.toString(),
             Icons.Default.Star,
-            StatBestScore
+            if (isDarkTheme) StatBestScoreDark else StatBestScore
         ),
         StatItem(
-            "Win Rate",
+            "Kazanma Oranı",
             "${uiState.winRate}%",
             Icons.Default.Build,
-            StatWinRate
+            if (isDarkTheme) StatWinRateDark else StatWinRate
         ),
         StatItem(
-            "Completed",
+            "Tamamlanan",
             uiState.completedGames.toString(),
             Icons.Default.PlayArrow,
-            StatGamesPlayed
+            if (isDarkTheme) StatGamesPlayedDark else StatGamesPlayed
         ),
         StatItem(
-            "Avg Score",
+            "Ort. Skor",
             uiState.averageScore.toString(),
             Icons.Default.Star,
-            StatBestScore
+            if (isDarkTheme) StatBestScoreDark else StatBestScore
         ),
         StatItem(
-            "Total Score",
+            "Toplam Skor",
             uiState.totalScore.toString(),
             Icons.Default.Build,
-            StatWinRate
+            if (isDarkTheme) StatWinRateDark else StatWinRate
         )
     )
 
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // İlk sıra - ilk 3 item
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             stats.take(3).forEach { stat ->
                 StatCard(
@@ -279,11 +272,9 @@ private fun QuickStatsSection(uiState: UiState) {
                 )
             }
         }
-
-        // İkinci sıra - son 3 item
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             stats.drop(3).forEach { stat ->
                 StatCard(
@@ -302,37 +293,37 @@ private fun StatCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(36.dp)
                     .clip(CircleShape)
-                    .background(stat.color.copy(alpha = 0.1f)),
+                    .background(stat.color.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = stat.icon,
                     contentDescription = null,
                     tint = stat.color,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
 
             Text(
                 text = stat.value,
-                style = MaterialTheme.typography.titleSmall.copy(
+                style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -340,7 +331,7 @@ private fun StatCard(
 
             Text(
                 text = stat.label,
-                style = MaterialTheme.typography.labelSmall.copy(
+                style = MaterialTheme.typography.bodySmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 textAlign = TextAlign.Center,
@@ -371,6 +362,16 @@ private fun MainActionsSection(
             modifier = Modifier
                 .fillMaxWidth(),
             variant = ABButtonVariant.PRIMARY,
+            size = ABButtonSize.LARGE,
+            fullWidth = true
+        )
+
+        ABButton(
+            text = "🏆 Top Scores",
+            onClick = { onAction(UiAction.NavigateToTopScores) },
+            modifier = Modifier
+                .fillMaxWidth(),
+            variant = ABButtonVariant.OUTLINE,
             size = ABButtonSize.LARGE,
             fullWidth = true
         )

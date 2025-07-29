@@ -28,7 +28,7 @@ fun GameScoreDto.toDomain(): GameScore {
         },
         gameTime = gameTime.orZero(),
         completedTime = completedTime.orZero(),
-        timestamp = timestamp,
+        timestamp = timestamp ?: System.currentTimeMillis(),
         completed = completed.orFalse()
     )
 }

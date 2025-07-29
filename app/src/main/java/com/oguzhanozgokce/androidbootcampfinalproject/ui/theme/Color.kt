@@ -61,3 +61,17 @@ val StatBestScore = Color(0xFFFF9500)
 val StatBestScoreDark = Color(0xFFFF9F0A)
 val StatWinRate = Color(0xFF007AFF)
 val StatWinRateDark = Color(0xFF0A84FF)
+
+// Top Scores Screen Colors
+val RankGold = Color(0xFFFFD700)
+val RankSilver = Color(0xFFC0C0C0)
+val RankBronze = Color(0xFFCD7F32)
+val RankDefault = Color(0xFF6B7280)
+
+val RankGoldBackground = Color(0xFFFFFBEB)
+val RankSilverBackground = Color(0xFFF8FAFC)
+val RankBronzeBackground = Color(0xFFFEF3E2)
+
+val RankGoldBackgroundDark = Color(0xFF3D3527)
+val RankSilverBackgroundDark = Color(0xFF353538)
+val RankBronzeBackgroundDark = Color(0xFF3D3127)

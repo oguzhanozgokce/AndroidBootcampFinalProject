@@ -3,6 +3,7 @@ package com.oguzhanozgokce.androidbootcampfinalproject.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -89,7 +90,19 @@ fun ABButton(
             .let { if (fullWidth) it.fillMaxWidth() else it }
             .height(dimensions.height)
             .clip(RoundedCornerShape(dimensions.cornerRadius))
-            .background(backgroundColor)
+            .then(
+                when (variant) {
+                    ABButtonVariant.OUTLINE -> Modifier
+                        .background(backgroundColor)
+                        .border(
+                            width = 1.dp,
+                            color = colors.borderColor ?: contentColor,
+                            shape = RoundedCornerShape(dimensions.cornerRadius)
+                        )
+
+                    else -> Modifier.background(backgroundColor)
+                }
+            )
             .clickable(
                 enabled = enabled && !loading,
                 indication = null,
@@ -157,7 +170,8 @@ private data class ButtonColors(
     val contentColor: Color,
     val pressedBackground: Color,
     val disabledBackground: Color,
-    val disabledContent: Color
+    val disabledContent: Color,
+    val borderColor: Color? = null
 )
 
 private data class ButtonDimensions(
@@ -192,7 +206,8 @@ private fun getButtonColors(variant: ABButtonVariant): ButtonColors {
             contentColor = MaterialTheme.colorScheme.primary,
             pressedBackground = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
             disabledBackground = Color.Transparent,
-            disabledContent = MaterialTheme.colorScheme.onSurfaceVariant
+            disabledContent = MaterialTheme.colorScheme.onSurfaceVariant,
+            borderColor = MaterialTheme.colorScheme.primary
         )
 
         ABButtonVariant.TEXT -> ButtonColors(
@@ -200,7 +215,8 @@ private fun getButtonColors(variant: ABButtonVariant): ButtonColors {
             contentColor = MaterialTheme.colorScheme.primary,
             pressedBackground = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f),
             disabledBackground = Color.Transparent,
-            disabledContent = MaterialTheme.colorScheme.onSurfaceVariant
+            disabledContent = MaterialTheme.colorScheme.onSurfaceVariant,
+            borderColor = null
         )
     }
 }

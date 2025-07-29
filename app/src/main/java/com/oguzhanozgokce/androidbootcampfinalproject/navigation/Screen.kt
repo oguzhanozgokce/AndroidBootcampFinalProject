@@ -33,4 +33,7 @@ sealed interface Screen {
 
     @Serializable
     data object GameScore : Screen
+
+    @Serializable
+    data object TopScores : Screen
 }

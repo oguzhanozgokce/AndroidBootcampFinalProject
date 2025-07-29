@@ -23,6 +23,7 @@ object HomeContract {
         data object NavigateToSettings : UiAction
         data class NavigateToPage(val page: Int) : UiAction
         data object NavigateToScoreboard : UiAction
+        data object NavigateToTopScores : UiAction
     }
 
     sealed interface UiEffect {
@@ -32,5 +33,6 @@ object HomeContract {
         data object NavigateToSettings : UiEffect
         data object NavigateToScoreboard : UiEffect
         data object NavigateToGameScore : UiEffect
+        data object NavigateToTopScores : UiEffect
     }
 }

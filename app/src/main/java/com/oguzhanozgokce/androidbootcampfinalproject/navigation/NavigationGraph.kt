@@ -28,6 +28,8 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.settings.SettingsViewMo
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashNavActions
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.splash.SplashViewModel
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores.TopScoresNavActions
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores.topScores
 
 @Composable
 fun NavigationGraph(
@@ -79,6 +81,7 @@ fun NavigationGraph(
                 onNavigateToGameSetup = { navController.navigate(GameSetup) },
                 onNavigateToGameScoreboard = { navController.navigate(GameScore) },
                 onNavigateToSettings = { navController.navigate(Settings) },
+                onNavigateToTopScore = { navController.navigate(TopScores) },
             )
         }
         composable<GameSetup> {
@@ -128,6 +131,11 @@ fun NavigationGraph(
         }
         gameScore(
             actions = GameScoreNavActions(
+                navigateToBack = { navController.popBackStack() }
+            )
+        )
+        topScores(
+            actions = TopScoresNavActions(
                 navigateToBack = { navController.popBackStack() }
             )
         )

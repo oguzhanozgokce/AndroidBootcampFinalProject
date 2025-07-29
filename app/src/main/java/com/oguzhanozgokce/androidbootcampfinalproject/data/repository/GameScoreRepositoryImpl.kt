@@ -40,25 +40,27 @@ class GameScoreRepositoryImpl @Inject constructor(
         throw Exception("getCurrentUserId() method needed - implement with AuthRepository")
     }
 
-    override suspend fun getAllScoresByUserId(userId: String): Result<List<GameScore>> {
-        return try {
-            val snapshot = firestore.collection(COLLECTION_SCORES)
-                .whereEqualTo("userId", userId)
-                .get()
-                .await()
+    override suspend fun getAllScoresByUserId(userId: String): Result<List<GameScore>> = safeCall {
+        val snapshot = firestore.collection(COLLECTION_SCORES)
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
 
-            val scores = snapshot.documents.mapNotNull { doc ->
-                doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
-            }.toDomainList().sortedByDescending { it.score }
-
-            Result.success(scores)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        snapshot.documents.mapNotNull { doc ->
+            doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
+        }.toDomainList().sortedByDescending { it.score }
     }
 
     override suspend fun getTopScores(limit: Int): Result<List<GameScore>> = safeCall {
-        throw Exception("getTopScoresByUserId() method should be used instead")
+        val snapshot = firestore.collection(COLLECTION_SCORES)
+            .get()
+            .await()
+
+        snapshot.documents.mapNotNull { doc ->
+            doc.toObject(GameScoreDto::class.java)?.copy(id = doc.id)
+        }.toDomainList()
+            .sortedByDescending { it.score }
+            .take(limit)
     }
 
     override suspend fun getTopScoresByUserId(userId: String, limit: Int): Result<List<GameScore>> = safeCall {

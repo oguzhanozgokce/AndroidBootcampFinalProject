@@ -8,6 +8,7 @@ object SettingsContract {
         val gameSettings: GameSettings? = null,
         val showClearScoresDialog: Boolean = false,
         val currentTheme: Boolean? = null,
+        val currentTimer: Boolean? = null,
     )
 
     sealed interface UiAction {
