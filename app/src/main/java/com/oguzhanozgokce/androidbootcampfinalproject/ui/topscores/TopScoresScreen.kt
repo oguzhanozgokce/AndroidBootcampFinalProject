@@ -1,7 +1,6 @@
 package com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +17,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
@@ -33,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -44,15 +40,9 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABBaseScreen
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABCenterAlignedTopAppBar
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.MemoryGameTheme
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankBronze
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankBronzeBackground
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankBronzeBackgroundDark
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankDefault
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankGold
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankGoldBackground
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankGoldBackgroundDark
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankSilver
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankSilverBackground
-import com.oguzhanozgokce.androidbootcampfinalproject.ui.theme.RankSilverBackgroundDark
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores.TopScoresContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores.TopScoresContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.topscores.TopScoresContract.UiState

@@ -76,7 +76,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private suspend fun handleToggleTheme(isDarkTheme: Boolean) {
-       updateUiState { copy(currentTheme = isDarkTheme) }
+        updateUiState { copy(currentTheme = isDarkTheme) }
 
         updateThemeUseCase(currentUserId, isDarkTheme).onSuccess {
             emitUiEffect(UiEffect.ThemeUpdated)

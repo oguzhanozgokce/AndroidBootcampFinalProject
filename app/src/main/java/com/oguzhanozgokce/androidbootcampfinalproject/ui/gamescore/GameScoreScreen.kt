@@ -170,10 +170,10 @@ fun GameScoreContent(
                 AnimatedVisibility(
                     visible = isVisible,
                     enter = fadeIn(animationSpec = tween(400, delayMillis = 300 + index * 100)) +
-                        slideInVertically(
-                            initialOffsetY = { it },
-                            animationSpec = tween(400, delayMillis = 300 + index * 100)
-                        )
+                            slideInVertically(
+                                initialOffsetY = { it },
+                                animationSpec = tween(400, delayMillis = 300 + index * 100)
+                            )
                 ) {
                     CompactScoreItem(score = score, rank = index + 1)
                 }
