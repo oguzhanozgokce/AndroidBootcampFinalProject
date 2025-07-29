@@ -11,6 +11,7 @@ data class DifficultyInfo(
 object GameSetupContract {
     data class UiState(
         val isLoading: Boolean = false,
+        val playerName: String = "",
         val selectedDifficulty: GameDifficulty = GameDifficulty.EASY,
         val availableDifficulties: List<DifficultyInfo> = listOf(
             DifficultyInfo(
@@ -32,12 +33,13 @@ object GameSetupContract {
     )
 
     sealed interface UiAction {
+        data class OnPlayerNameChanged(val name: String) : UiAction
         data class OnDifficultyChanged(val difficulty: GameDifficulty) : UiAction
         data object OnStartGameClicked : UiAction
     }
 
     sealed interface UiEffect {
-        data class NavigateToGame(val difficulty: GameDifficulty) : UiEffect
+        data class NavigateToGame(val difficulty: GameDifficulty, val playerName: String) : UiEffect
         data class ShowError(val message: String) : UiEffect
     }
 }

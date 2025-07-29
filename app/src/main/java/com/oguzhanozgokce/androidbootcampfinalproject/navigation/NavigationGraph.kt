@@ -92,8 +92,8 @@ fun NavigationGraph(
                 uiState = uiState,
                 uiEffect = uiEffect,
                 onAction = viewModel::onAction,
-                onNavigateToGame = { difficulty ->
-                    navController.navigate(Game(difficulty))
+                onNavigateToGame = { difficulty, playerName ->
+                    navController.navigate(Game(difficulty, playerName))
                 },
                 onNavigateBack = { navController.popBackStack() }
             )

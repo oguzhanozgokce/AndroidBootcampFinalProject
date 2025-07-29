@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABButtonVari
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABCenterAlignedTopAppBar
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABSnackbarType
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.showABSnackbar
+import com.oguzhanozgokce.androidbootcampfinalproject.ui.components.ABTextField
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupContract.UiAction
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupContract.UiEffect
 import com.oguzhanozgokce.androidbootcampfinalproject.ui.gamesetup.GameSetupContract.UiState
@@ -61,7 +63,7 @@ fun GameSetupScreen(
     uiState: UiState,
     uiEffect: Flow<UiEffect>,
     onAction: (UiAction) -> Unit,
-    onNavigateToGame: (GameDifficulty) -> Unit = {},
+    onNavigateToGame: (GameDifficulty, String) -> Unit = { _, _ -> },
     onNavigateBack: () -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -74,7 +76,7 @@ fun GameSetupScreen(
         snackbarHostState = snackbarHostState,
         collectEffect = { effect ->
             when (effect) {
-                is UiEffect.NavigateToGame -> onNavigateToGame(effect.difficulty)
+                is UiEffect.NavigateToGame -> onNavigateToGame(effect.difficulty, effect.playerName)
                 is UiEffect.ShowError -> {
                     coroutineScope.launch {
                         snackbarHostState.showABSnackbar(
@@ -136,6 +138,12 @@ fun GameSetupContent(
         // Header Section
         HeaderSection()
 
+        // Player Name Section
+        PlayerNameSection(
+            playerName = uiState.playerName,
+            onPlayerNameChanged = { onAction(UiAction.OnPlayerNameChanged(it)) }
+        )
+
         DifficultySelectionSection(
             selectedDifficulty = uiState.selectedDifficulty,
             difficulties = uiState.availableDifficulties,
@@ -190,6 +198,34 @@ private fun HeaderSection() {
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+@Composable
+private fun PlayerNameSection(
+    playerName: String,
+    onPlayerNameChanged: (String) -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Oyuncu Adı",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        )
+        ABTextField(
+            value = playerName,
+            onValueChange = onPlayerNameChanged,
+            label = "",
+            placeholder = "Oyuncu adınızı giriniz",
+            leadingIcon = Icons.Default.Person,
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true
+        )
     }
 }
 

@@ -36,7 +36,9 @@ class GameViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel(), MVI<UiState, UiAction, UiEffect> by mvi(UiState()) {
 
-    private val difficulty = savedStateHandle.toRoute<Screen.Game>().difficulty
+    private val gameRoute = savedStateHandle.toRoute<Screen.Game>()
+    private val difficulty = gameRoute.difficulty
+    private val playerName = gameRoute.playerName
     private var gameState: GameState? = null
     private var gameStartTime: Long = 0L
 
@@ -44,7 +46,6 @@ class GameViewModel @Inject constructor(
     private val isTimerRunning = _isTimerRunning.asStateFlow()
 
     init {
-        Log.d("GameViewModel", "GameViewModel initialized with difficulty: $difficulty")
         viewModelScope.launch {
             isTimerRunning.collectLatest { isRunning ->
                 if (isRunning) {
@@ -71,7 +72,7 @@ class GameViewModel @Inject constructor(
     private suspend fun initializeGame() {
         updateUiState { copy(isLoading = true) }
 
-        val result = createGameUseCase(difficulty, "Player")
+        val result = createGameUseCase(difficulty, playerName)
 
         result.fold(
             onSuccess = { newGameState ->
@@ -104,7 +105,7 @@ class GameViewModel @Inject constructor(
         )
     }
 
-    private suspend fun handleCardClick(cardId: String) {
+    private  fun handleCardClick(cardId: String) {
         val currentGameState = gameState ?: return
         val currentUiState = uiState.value
 
@@ -233,7 +234,6 @@ class GameViewModel @Inject constructor(
 
         val userResult = getCurrentUserUseCase()
         val userId = userResult.getOrNull()?.uid ?: "anonymous_user"
-        val playerName = userResult.getOrNull()?.displayName ?: "Player"
 
         val initialGameTime = when (difficulty) {
             else -> 60000L
@@ -245,8 +245,8 @@ class GameViewModel @Inject constructor(
             playerName = playerName,
             score = currentState.score,
             difficulty = currentState.difficulty,
-            gameTime = initialGameTime, // Başlangıç oyun süresi
-            completedTime = completedTime, // Gerçek tamamlama süresi
+            gameTime = initialGameTime,
+            completedTime = completedTime,
             timestamp = System.currentTimeMillis(),
             completed = currentState.isGameCompleted
         )

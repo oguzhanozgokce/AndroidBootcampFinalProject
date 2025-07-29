@@ -20,7 +20,7 @@ sealed interface Screen {
     data object GameSetup : Screen
 
     @Serializable
-    data class Game(val difficulty: GameDifficulty) : Screen
+    data class Game(val difficulty: GameDifficulty, val playerName: String) : Screen
 
     @Serializable
     data object Score : Screen
